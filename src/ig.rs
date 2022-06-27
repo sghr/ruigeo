@@ -1,22 +1,23 @@
 use wasm_bindgen::prelude::*;
-use wasm_bindgen::*;
 use web_sys::WebGlRenderingContext as GL;
-use web_sys::console::log_1;
 use wasm_bindgen::JsCast;
+use web_sys::console::log_1;
 use web_sys::*;
 use std::fmt;
+use std::f64::consts::PI;
 
 /****************************
 * constant
 *****************************/
 
 pub const TOLERANCE : f64 = 0.001;
+#[allow(dead_code)]
 pub const ANGLE_TOLERANCE : f64 = std::f64::consts::PI/1000.0;
 
 pub struct DataManager{
     pub adding_data: DataStorage,
     pub deleting_data: DataStorage,
-    pub time: u64,
+    pub time: i64,
 }
 
 impl DataManager{
@@ -28,42 +29,54 @@ impl DataManager{
         DataManager{adding_data:DataStorage::new_with_offset(objOffset, ptOffset, crvOffset, srfOffset, agnOffset), deleting_data:DataStorage::new()}
     }
     */
-    pub fn new_with_storage_offset(storage:&DataStorage, time:u64)->Self{
+    #[allow(dead_code)]
+    pub fn new_with_storage_offset(storage:&DataStorage, time:i64)->Self{
         DataManager{adding_data:DataStorage::new_with_storage_offset(storage), deleting_data:DataStorage::new(), time}
     }
 
+    #[allow(dead_code)]
     pub fn add_object(&mut self, object:Box<dyn Object>)->usize{
         self.adding_data.add_object(object)
     }
+    #[allow(dead_code)]
     pub fn add_point(&mut self, point:Box<Point>)->usize{
         self.adding_data.add_point(point)
     }
+    #[allow(dead_code)]
     pub fn add_curve(&mut self, curve:Box<Curve>)->usize{
         self.adding_data.add_curve(curve)
     }
+    #[allow(dead_code)]
     pub fn add_surface(&mut self, surface:Box<Surface>)->usize{
         self.adding_data.add_surface(surface)
     }
+    #[allow(dead_code)]
     pub fn add_agent(&mut self, agent:Box<Agent>)->usize{
         self.adding_data.add_agent(agent)
     }
 
+    #[allow(dead_code)]
     pub fn delete_object(&mut self, index:i32){
         self.deleting_data.object_index.push(index);
     }
+    #[allow(dead_code)]
     pub fn delete_point(&mut self, index:i32){
         self.deleting_data.point_index.push(index);
     }
+    #[allow(dead_code)]
     pub fn delete_point_geom(&mut self, point:Point){
         self.deleting_data.point_index.push(point.id as i32);
     }
 
+    #[allow(dead_code)]
     pub fn delete_curve(&mut self, index:i32){
         self.deleting_data.curve_index.push(index);
     }
+    #[allow(dead_code)]
     pub fn delete_surface(&mut self, index:i32){
         self.deleting_data.surface_index.push(index);
     }
+    #[allow(dead_code)]
     pub fn delete_agent(&mut self, index:i32){
         self.deleting_data.agent_index.push(index);
     }
@@ -90,6 +103,7 @@ pub struct DataStorage{
 }
 
 impl DataStorage{
+    #[allow(dead_code)]
     pub fn new()->Self{
         DataStorage{
             objects:Vec::new(),
@@ -110,26 +124,28 @@ impl DataStorage{
         }
     }
 
-    pub fn new_with_offset(objOffset:usize, ptOffset:usize, crvOffset:usize, srfOffset:usize, agnOffset:usize )->Self{
+    #[allow(dead_code)]
+    pub fn new_with_offset(obj_offset:usize, pt_offset:usize, crv_offset:usize, srf_offset:usize, agn_offset:usize )->Self{
         DataStorage{
             objects:Vec::new(),
             object_index:Vec::new(),
-            object_index_offset:objOffset,
+            object_index_offset:obj_offset,
             points:Vec::new(),
             point_index:Vec::new(),
-            point_index_offset:ptOffset,
+            point_index_offset:pt_offset,
             curves:Vec::new(),
             curve_index:Vec::new(),
-            curve_index_offset:crvOffset,
+            curve_index_offset:crv_offset,
             surfaces:Vec::new(),
             surface_index:Vec::new(),
-            surface_index_offset:srfOffset,
+            surface_index_offset:srf_offset,
             agents:Vec::new(),
             agent_index:Vec::new(),
-            agent_index_offset:agnOffset,
+            agent_index_offset:agn_offset,
         }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_storage_offset(storage:&DataStorage)->Self{
         DataStorage{
             objects:Vec::new(),
@@ -150,22 +166,28 @@ impl DataStorage{
         }
     }
 
+    #[allow(dead_code)]
     pub fn object_num(&self)->usize{
         self.objects.len()
     }
+    #[allow(dead_code)]
     pub fn point_num(&self)->usize{
         self.points.len()
     }
+    #[allow(dead_code)]
     pub fn curve_num(&self)->usize{
         self.curves.len()
     }
+    #[allow(dead_code)]
     pub fn surface_num(&self)->usize{
         self.surfaces.len()
     }
+    #[allow(dead_code)]
     pub fn agent_num(&self)->usize{
         self.agents.len()
     }
 
+    #[allow(dead_code)]
     pub fn add_object(&mut self, object:Box<dyn Object>)->usize{
         self.objects.push(object);
         self.object_index.push((self.objects.len()-1) as i32);
@@ -173,6 +195,7 @@ impl DataStorage{
         //object.set_id(id);
         id
     }
+    #[allow(dead_code)]
     pub fn add_point(&mut self, point:Box<Point>)->usize{
         let id = self.point_index.len()+self.point_index_offset;
         //point.id = id;
@@ -181,6 +204,7 @@ impl DataStorage{
         //let id = self.point_index.len()-1+self.point_index_offset;
         id
     }
+    #[allow(dead_code)]
     pub fn add_curve(&mut self, curve:Box<Curve>)->usize{
         let id = self.curve_index.len()+self.curve_index_offset;
         //web_sys::console::log_1(&JsValue::from(format!("DataStorage::add_curve id = {}", id)));
@@ -189,6 +213,7 @@ impl DataStorage{
         //curve.id = id;
         id
     }
+    #[allow(dead_code)]
     pub fn add_surface(&mut self, surface:Box<Surface>)->usize{
         self.surfaces.push(surface);
         self.surface_index.push((self.surfaces.len()-1) as i32);
@@ -196,9 +221,10 @@ impl DataStorage{
         //surface.id = id;
         id
     }
+    #[allow(dead_code)]
     pub fn add_agent(&mut self, mut agent:Box<Agent>)->usize{
         let id = self.agent_index.len()+self.agent_index_offset;
-        //web_sys::console::log_1(&JsValue::from(format!("DataStorage::add_agent id = {}", id)));
+        //log_1(&JsValue::from(format!("DataStorage::add_agent id = {}", id)));
 
         agent.set_id(id as i32);
         self.agents.push(agent);
@@ -206,18 +232,23 @@ impl DataStorage{
         id
     }
 
+    #[allow(dead_code)]
     pub fn sort_object_index(&mut self){ // descending sort
         self.object_index.sort_by(|a, b| b.cmp(&a));
     }
+    #[allow(dead_code)]
     pub fn sort_point_index(&mut self){ // descending sort
         self.point_index.sort_by(|a, b| b.cmp(&a));
     }
+    #[allow(dead_code)]
     pub fn sort_curve_index(&mut self){ // descending sort
         self.curve_index.sort_by(|a, b| b.cmp(&a));
     }
+    #[allow(dead_code)]
     pub fn sort_surface_index(&mut self){ // descending sort
         self.surface_index.sort_by(|a, b| b.cmp(&a));
     }
+    #[allow(dead_code)]
     pub fn sort_agent_index(&mut self){ // descending sort
         self.agent_index.sort_by(|a, b| b.cmp(&a));
     }
@@ -233,6 +264,7 @@ impl DataStorage{
     }
     */
 
+    #[allow(dead_code)]
     pub fn delete_object(&mut self, index:i32){
         if index>=0 && index < self.object_index.len() as i32 && self.object_index[index as usize] >= 0{
             self.objects.remove(self.object_index[index as usize] as usize);
@@ -242,12 +274,13 @@ impl DataStorage{
             }
         }
         else{
-            web_sys::console::log_1(&JsValue::from(format!("at delete_object: ERROR: object index at {} is invalid!", index)));
+            log_1(&JsValue::from(format!("at delete_object: ERROR: object index at {} is invalid!", index)));
         }
         // not implemented yet
         //let idx = self.objects.iter().position(|o| o.as_ref()==object.as_ref());
         //if !idx.is_none(){ self.objects.remove(idx.unwrap()); }
     }
+    #[allow(dead_code)]
     pub fn delete_point(&mut self, index:i32){
         if index>=0 && index < self.point_index.len() as i32 && self.point_index[index as usize] >= 0{
             self.points.remove(self.point_index[index as usize] as usize);
@@ -257,7 +290,7 @@ impl DataStorage{
             }
         }
         else{
-            web_sys::console::log_1(&JsValue::from(format!("at delete_point: ERROR: point index at {} is invalid!", index)));
+            log_1(&JsValue::from(format!("at delete_point: ERROR: point index at {} is invalid!", index)));
         }
 
         /*
@@ -266,6 +299,7 @@ impl DataStorage{
             self.points.remove(idx.unwrap());
         }*/
     }
+    #[allow(dead_code)]
     pub fn delete_curve(&mut self, index:i32){
         if index>=0 && index < self.curve_index.len() as i32 && self.curve_index[index as usize] >= 0{
             self.curves.remove(self.curve_index[index as usize] as usize);
@@ -275,9 +309,10 @@ impl DataStorage{
             }
         }
         else{
-            web_sys::console::log_1(&JsValue::from(format!("at delete_curve: ERROR: curve index at {} is negative!", index)));
+            log_1(&JsValue::from(format!("at delete_curve: ERROR: curve index at {} is negative!", index)));
         }
     }
+    #[allow(dead_code)]
     pub fn delete_surface(&mut self, index:i32){
         if index>=0 && index < self.surface_index.len() as i32 && self.surface_index[index as usize] >= 0{
             self.surfaces.remove(self.surface_index[index as usize] as usize);
@@ -290,6 +325,7 @@ impl DataStorage{
             web_sys::console::log_1(&JsValue::from(format!("at delete_surface: ERROR: surface index at {} is negative!", index)));
         }
     }
+    #[allow(dead_code)]
     pub fn delete_agent(&mut self, index:i32){
         //web_sys::console::log_1(&JsValue::from(format!("at delete_agent: index at {} ", index)));
 
@@ -305,6 +341,7 @@ impl DataStorage{
         }
     }
 
+    #[allow(dead_code)]
     pub fn clear(&mut self){
         self.objects.clear();
         self.points.clear();
@@ -329,10 +366,12 @@ pub struct Server/*<'a>*/{
     //graphic_server: GraphicServer/*<'a>*/,
     //dynamic_server: DynamicServer/*<'a>*/,
     glserver: WebGlServer/*<'a>*/,
-    time:u64,
+    time:i64,
+    duration:i64,
 }
 
 impl/*<'a>*/ Server/*<'a>*/{
+    #[allow(dead_code)]
     pub fn new(width:f32, height:f32) -> Self{
         Server{
             //objects: Vec::new(),
@@ -340,47 +379,42 @@ impl/*<'a>*/ Server/*<'a>*/{
             //graphic_server: GraphicServer::new(width,height),
             //dynamic_server: DynamicServer::new(),
             glserver:WebGlServer::new(width,height),
-            time: 0
+            time: 0,
+            duration : -1
         }
     }
-    //pub fn add(&mut self, object:&/*'a*/ mut Object/*<'a>*/){
+
+    #[allow(dead_code)]
     pub fn add_object(&mut self, object:Box<dyn Object>)->usize{
-        //self.objects.push(object);
         self.storage.add_object(object)
     }
+    #[allow(dead_code)]
     pub fn add_point(&mut self, point:Box<Point>)->usize{
-//        web_sys::console::log_1(&JsValue::from(format!("added point {},{},{}", &point.pos.x,&point.pos.y,&point.pos.z)));
         self.glserver.add_point(Box::new(GlPoint::from_point(&point)));
         let id = self.storage.add_point(point);
-        //point.id = id;
-//        web_sys::console::log_1(&JsValue::from(format!("point added at {}", id)));
         id
     }
+    #[allow(dead_code)]
     pub fn add_curve(&mut self, curve:Box<Curve>)->usize{
-        //curve.id = self.storage.curve_num();
         self.glserver.add_line(Box::new(GlLine::from_curve(&curve)));
         let id = self.storage.add_curve(curve);
-        //web_sys::console::log_1(&JsValue::from(format!("Server::add_curve id = {}", id))); //
-
         //curve.id = id;
         id
     }
+    #[allow(dead_code)]
     pub fn add_surface(&mut self, surface:Box<Surface>)->usize{
-        //surface.id = self.storage.surface_num();
         self.glserver.add_surface(Box::new(GlSurface::from_surface(&surface)));
         let id = self.storage.add_surface(surface);
-        //surface.id = id;
         id
     }
+    #[allow(dead_code)]
     pub fn add_agent(&mut self, agent:Box<Agent>)->usize{
-        //agent.set_id( self.storage.agent_num());
         let id = self.storage.add_agent(agent);
         //agent.set_id(id);
-        //web_sys::console::log_1(&JsValue::from(format!("Server::add_agent id = {}", id)));
-
         id
     }
 
+    #[allow(dead_code)]
     pub fn delete_data(&mut self, mut deleting_data: DataStorage){
         if deleting_data.point_index.len() > 0{
             deleting_data.sort_point_index();
@@ -433,19 +467,13 @@ impl/*<'a>*/ Server/*<'a>*/{
 
     }
 
+    #[allow(dead_code)]
     pub fn add_data(&mut self, adding_data: DataStorage){
-
         //web_sys::console::log_1(&JsValue::from(format!("Server::add_data"))); //
-
         for o in adding_data.objects{
             self.add_object(o);
         }
-
-        //for i in 0..manager.adding_data.points.len(){
         for p in adding_data.points{
-            //self.glserver.add_point(Box::new(GlPoint::from_point(&manager.adding_data.points[i)));
-            //self.storage.add_point(manager.adding_data.points[i]);
-            //self.glserver.add_point(Box::new(GlPoint::from_point(p)));
             self.add_point(p);
         }
         for c in adding_data.curves{
@@ -457,16 +485,46 @@ impl/*<'a>*/ Server/*<'a>*/{
         for a in adding_data.agents{
             self.add_agent(a);
         }
-
-
-        //self.storage.add_storage(&mut manager.adding_data);
     }
 
+    #[allow(dead_code)]
+    pub fn set_zoom(&mut self, zoom:f64){
+        self.glserver.set_zoom_ratio(zoom);
+    }
+    #[allow(dead_code)]
+    pub fn  enable_camera_rotation(&mut self, flag:bool){
+        self.glserver.enable_camera_rotation(flag);
+    }
+    #[allow(dead_code)]
+    pub fn set_camera_rotation_speed(&mut self, speed:f64){
+        self.glserver.set_camera_rotation_speed(speed);
+    }
+    #[allow(dead_code)]
+    pub fn set_camera_pitch(&mut self, pitch:f64){
+        self.glserver.set_camera_pitch_angle(pitch);
+    }
+    #[allow(dead_code)]
+    pub fn set_camera_yaw(&mut self, yaw:f64){
+        self.glserver.set_camera_yaw_angle(yaw);
+    }
+
+    #[allow(dead_code)]
+    pub fn bg(&mut self, bgcolor:&Color){
+        self.glserver.set_bg_color(bgcolor);
+    }
+    #[allow(dead_code)]
+    pub fn bg_colors(&mut self, bgcolor1:&Color, bgcolor2:&Color, bgcolor3:&Color, bgcolor4:&Color){
+        self.glserver.set_bg_colors(bgcolor1, bgcolor2, bgcolor3, bgcolor4);
+    }
+
+
+    #[allow(dead_code)]
     pub fn init(&/*'a*/ mut self){
         //self.graphic_server.init();
         //self.dynamic_server.init();
         self.glserver.init();
     }
+    #[allow(dead_code)]
     pub fn draw(&mut self){
         //self.graphic_server.draw();
         //self.dynamic_server.update();
@@ -478,77 +536,65 @@ impl/*<'a>*/ Server/*<'a>*/{
         //}
         //let mut mgr = DataManager::new();
 
-        let mut mgr = DataManager::new_with_storage_offset(&self.storage, self.time.clone());
+        if self.duration < 0 || self.time < self.duration{
+
+            let mut mgr = DataManager::new_with_storage_offset(&self.storage, self.time.clone());
 
 
-        if self.storage.agents.len() > 0{
-            web_sys::console::log_1(&JsValue::from(format!("Server::agents.len()={}", self.storage.agents.len())));
-        }
+            if self.storage.agents.len() > 0{
+                web_sys::console::log_1(&JsValue::from(format!("Server::agents.len()={}", self.storage.agents.len())));
+            }
 
-        let mut agentsCopy : Vec<Box<Agent>> = Vec::new();
-        for i in 0..self.storage.agents.len(){
-            agentsCopy.push(Box::new((*self.storage.agents[i]).clone()));
-        }
-        /*
-        let magents = &mut self.storage.agents;
+            let mut agents_copy : Vec<Box<Agent>> = Vec::new();
+            for i in 0..self.storage.agents.len(){
+                agents_copy.push(Box::new((*self.storage.agents[i]).clone()));
+            }
 
-        //for i in 0..self.storage.agents.len(){
-        for i in 0..magents.len(){
-            //self.storage.agents[i].interact(agents, &mut mgr);
-            magents[i].interact(&agents, &mut mgr);
-        }
-        */
-
-
-        for i in 0..self.storage.agents.len(){
-            for j in 0..self.storage.agents.len(){
-                if i!=j{
-                    //self.storage.agents[i].interact(agents[j], &mut mgr);
-                    Agent::interact(&mut self.storage.agents[i], &agentsCopy, &mut mgr)
+            for i in 0..self.storage.agents.len(){
+                for j in 0..self.storage.agents.len(){
+                    if i!=j{
+                        //self.storage.agents[i].interact(agents[j], &mut mgr);
+                        Agent::interact(&mut self.storage.agents[i], &agents_copy, &mut mgr)
+                    }
                 }
             }
+
+            //web_sys::console::log_1(&JsValue::from(format!("Server: end of interact")));
+
+            for i in 0..self.storage.agents.len(){
+                self.storage.agents[i].update(&mut mgr);
+            }
+
+            //web_sys::console::log_1(&JsValue::from(format!("Server: end of update")));
+
+            self.delete_data(mgr.deleting_data);
+
+            self.add_data(mgr.adding_data);
         }
-
-        //web_sys::console::log_1(&JsValue::from(format!("Server: end of interact")));
-
-        for i in 0..self.storage.agents.len(){
-            self.storage.agents[i].update(&mut mgr);
-        }
-
-        //web_sys::console::log_1(&JsValue::from(format!("Server: end of update")));
-
-        //web_sys::console::log_1(&JsValue::from(format!("0 adding point num{}", mgr.adding_data.points.len())));
-        self.delete_data(mgr.deleting_data);
-
-        //web_sys::console::log_1(&JsValue::from(format!("2 adding point num{}", mgr.adding_data.points.len())));
-
-        self.add_data(mgr.adding_data);
-        //for i in 0..mgr.adding_data.points.len(){
-        //for p in mgr.adding_data.points{
-            //self.glserver.add_point(Box::new(GlPoint::from_point(&manager.adding_data.points[i)));
-            //self.storage.add_point(manager.adding_data.points[i]);
-            //self.glserver.add_point(Box::new(GlPoint::from_point(p)));
-        //    self.storage.add_point(p);
-        //}
-
-
         self.time += 1;
     }
 
 
-    pub fn time(&self)->u64{
-        //self.dynamic_server.time()
+    #[allow(dead_code)]
+    pub fn time(&self)->i64{
         self.time
+    }
+
+    #[allow(dead_code)]
+    pub fn duration(&mut self, dur:i64){
+        self.duration = dur;
     }
 }
 
 pub struct GraphicServer/*<'a>*/{
+    #[allow(dead_code)]
     graphics3d: Vec<Graphic>,
     glserver: WebGlServer/*<'a>*/,
     //server: Option<&'a Server<'a>>,
 }
 
 impl/*<'a>*/ GraphicServer/*<'a>*/{
+    #[allow(dead_code)]
     pub fn new(width:f32,height:f32) -> Self{
         GraphicServer{
             graphics3d: Vec::new(),
@@ -556,24 +602,32 @@ impl/*<'a>*/ GraphicServer/*<'a>*/{
             //server:None
         }
     }
+    #[allow(dead_code)]
     pub fn init(&mut self/*, serv:&'a Server<'a> */){
         //self.server = Some(serv);
         self.glserver.init(/*serv*/);
     }
+    #[allow(dead_code)]
     pub fn draw(&mut self){
         self.glserver.draw();
     }
 }
 
+#[allow(dead_code)]
 pub struct DynamicServer/*<'a>*/{
+    #[allow(dead_code)]
     dynamics: Vec<Dynamic>,
+    #[allow(dead_code)]
     adding_dynamics: Vec<Dynamic>,
+    #[allow(dead_code)]
     removing_dynamics: Vec<Dynamic>,
-    time: u64,
+    #[allow(dead_code)]
+    time: i64,
     //server: Option<&'a Server<'a>>,
 }
 
 impl/*<'a>*/ DynamicServer/*<'a>*/{
+    #[allow(dead_code)]
     pub fn new()->Self{
         DynamicServer{
             dynamics: Vec::new(),
@@ -583,13 +637,16 @@ impl/*<'a>*/ DynamicServer/*<'a>*/{
             //server:None,
         }
     }
+    #[allow(dead_code)]
     pub fn init(&mut self/*, serv: &'a Server<'a>*/){
         //self.server=Some(serv);
     }
+    #[allow(dead_code)]
     pub fn update(&mut self){
 
     }
-    pub fn time(&self)->u64{
+    #[allow(dead_code)]
+    pub fn time(&self)->i64{
         self.time
     }
 }
@@ -597,21 +654,27 @@ impl/*<'a>*/ DynamicServer/*<'a>*/{
 
 
 
+
+#[allow(dead_code)]
 pub struct GlUniformMatrix4{
     mat: Matrix4,
     name: String,
     location: Option<WebGlUniformLocation>,
 }
 impl GlUniformMatrix4{
+    #[allow(dead_code)]
     pub fn new(m:Matrix4, s:&str)->Self{
         GlUniformMatrix4{ mat:m, name:String::from(s), location:None }
     }
+    #[allow(dead_code)]
     pub fn set_matrix(&mut self, mat:&Matrix4){
         self.mat.set_with_matrix4(mat);
     }
+    #[allow(dead_code)]
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         self.location = Some(gl.get_uniform_location(&program, &self.name).unwrap());
     }
+    #[allow(dead_code)]
     pub fn set_uniform(&mut self, gl:&GL){
         gl.uniform_matrix4fv_with_f32_array(Some(&self.location.as_ref().unwrap()), false, &self.mat.to_array32());
     }
@@ -622,12 +685,15 @@ pub struct GlUniformVec3{
     location: Option<WebGlUniformLocation>,
 }
 impl GlUniformVec3{
+    #[allow(dead_code)]
     pub fn new(v:Vec3, s:&str)->Self{
         GlUniformVec3{ vec:v, name:String::from(s), location:None }
     }
+    #[allow(dead_code)]
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         self.location = Some(gl.get_uniform_location(&program, &self.name).unwrap());
     }
+    #[allow(dead_code)]
     pub fn set_uniform(&mut self, gl:&GL){
         gl.uniform3fv_with_f32_array(Some(&self.location.as_ref().unwrap()), &self.vec.to_array32());
     }
@@ -638,19 +704,23 @@ pub struct GlUniformColor{
     location: Option<WebGlUniformLocation>,
 }
 impl GlUniformColor{
+    #[allow(dead_code)]
     pub fn new(c:Color, s:&str)->Self{
         GlUniformColor{ color:c, name:String::from(s), location:None }
     }
+    #[allow(dead_code)]
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         //web_sys::console::log_1(&JsValue::from(format!("GlUniformColor::set_location name: {}", self.name )));
 
         self.location = Some(gl.get_uniform_location(&program, &self.name).unwrap());
     }
+    #[allow(dead_code)]
     pub fn set_uniform(&mut self, gl:&GL){
         //web_sys::console::log_1(&JsValue::from(format!("GlUniformColor::set_uniform color: {}", self.color )));
 
         gl.uniform4fv_with_f32_array(Some(&self.location.as_ref().unwrap()), &self.color.to_array());
     }
+    #[allow(dead_code)]
     pub fn set_color(&mut self, color:&Color){
         self.color = *color;
     }
@@ -661,12 +731,15 @@ pub struct GlUniformInt{
     location: Option<WebGlUniformLocation>,
 }
 impl GlUniformInt{
+    #[allow(dead_code)]
     pub fn new(i:i32, s:&str)->Self{
         GlUniformInt{ i, name:String::from(s), location:None }
     }
+    #[allow(dead_code)]
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         self.location = Some(gl.get_uniform_location(&program, &self.name).unwrap());
     }
+    #[allow(dead_code)]
     pub fn set_uniform(&mut self, gl:&GL){
         gl.uniform1i(Some(&self.location.as_ref().unwrap()), self.i);
     }
@@ -677,12 +750,15 @@ pub struct GlUniformFloat{
     location: Option<WebGlUniformLocation>,
 }
 impl GlUniformFloat{
+    #[allow(dead_code)]
     pub fn new(x:f32, s:&str)->Self{
         GlUniformFloat{ x, name:String::from(s), location:None }
     }
+    #[allow(dead_code)]
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         self.location = Some(gl.get_uniform_location(&program, &self.name).unwrap());
     }
+    #[allow(dead_code)]
     pub fn set_uniform(&mut self, gl:&GL){
         gl.uniform1f(Some(&self.location.as_ref().unwrap()), self.x);
     }
@@ -695,9 +771,11 @@ pub struct GlAttributeVec2{
     buffer:Option<WebGlBuffer>
 }
 impl GlAttributeVec2{
+    #[allow(dead_code)]
     pub fn new(s:&str)->Self{
         GlAttributeVec2{ name:String::from(s), location:0, stride:2 , buffer:None }
     }
+    #[allow(dead_code)]
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         let index = gl.get_attrib_location(&program, &self.name);
         if index<0{
@@ -706,6 +784,7 @@ impl GlAttributeVec2{
         self.location = index as u32;
     }
     //pub fn set_buffer(&mut self, gl:&GL, buffer:&WebGlBuffer){
+    #[allow(dead_code)]
     pub fn set_buffer(&mut self, gl:&GL,  data: &Vec<f32>) {
         self.create_vbo_vector(gl, data);
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
@@ -713,6 +792,7 @@ impl GlAttributeVec2{
         gl.vertex_attrib_pointer_with_i32(self.location, self.stride, GL::FLOAT, false, 0, 0);
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
+    #[allow(dead_code)]
     pub fn activate(&mut self, gl:&GL){
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
         gl.enable_vertex_attrib_array(self.location);
@@ -720,12 +800,14 @@ impl GlAttributeVec2{
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
 
+    #[allow(dead_code)]
     pub fn unset_buffer(&mut self, gl:&GL){
         //gl.bind_buffer(GL::ARRAY_BUFFER, None);
         //gl.disable_vertex_attrib_array(self.location);
         gl.delete_buffer(Some(&self.buffer.as_ref().unwrap()));
     }
     //pub fn create_vbo_vector(&mut self gl: &GL, data: &Vec<f32>) -> Result<WebGlBuffer, String> {
+    #[allow(dead_code)]
     pub fn create_vbo_vector(&mut self, gl: &GL, data: &Vec<f32>) {
         self.buffer = gl.create_buffer();
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
@@ -744,9 +826,11 @@ pub struct GlAttributeVec3{
     buffer:Option<WebGlBuffer>
 }
 impl GlAttributeVec3{
+    #[allow(dead_code)]
     pub fn new(s:&str)->Self{
         GlAttributeVec3{ name:String::from(s), location:0, stride:3, buffer:None }
     }
+    #[allow(dead_code)]
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         let index = gl.get_attrib_location(&program, &self.name);
         if index<0{
@@ -755,6 +839,7 @@ impl GlAttributeVec3{
         self.location = index as u32;
     }
     //pub fn set_buffer(&mut self, gl:&GL, buffer:&WebGlBuffer){
+    #[allow(dead_code)]
     pub fn set_buffer(&mut self, gl:&GL, data: &Vec<f32>){
         self.create_vbo_vector(gl, data);
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
@@ -762,6 +847,7 @@ impl GlAttributeVec3{
         gl.vertex_attrib_pointer_with_i32(self.location, self.stride, GL::FLOAT, false, 0, 0);
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
+    #[allow(dead_code)]
     pub fn activate(&mut self, gl:&GL){
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
         gl.enable_vertex_attrib_array(self.location);
@@ -769,6 +855,7 @@ impl GlAttributeVec3{
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
 
+    #[allow(dead_code)]
     pub fn create_vbo_vector(&mut self, gl: &GL, data: &Vec<f32>) {
         self.buffer = gl.create_buffer();
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
@@ -778,6 +865,7 @@ impl GlAttributeVec3{
         }
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
+    #[allow(dead_code)]
     pub fn unset_buffer(&mut self, gl:&GL){
         //gl.bind_buffer(GL::ARRAY_BUFFER, None);
         //gl.disable_vertex_attrib_array(self.location);
@@ -793,9 +881,11 @@ pub struct GlAttributeColor{
     buffer:Option<WebGlBuffer>
 }
 impl GlAttributeColor{
+    #[allow(dead_code)]
     pub fn new(s:&str)->Self{
         GlAttributeColor{ name:String::from(s), location:0, stride:4, buffer:None }
     }
+    #[allow(dead_code)]
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         let index = gl.get_attrib_location(&program, &self.name);
         if index<0{
@@ -804,6 +894,7 @@ impl GlAttributeColor{
         self.location = index as u32;
     }
     //pub fn set_buffer(&mut self, gl:&GL, buffer:&WebGlBuffer){
+    #[allow(dead_code)]
     pub fn set_buffer(&mut self, gl:&GL, data: &Vec<f32>){
         self.create_vbo_vector(gl, data);
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
@@ -811,12 +902,14 @@ impl GlAttributeColor{
         gl.vertex_attrib_pointer_with_i32(self.location, self.stride, GL::FLOAT, false, 0, 0);
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
+    #[allow(dead_code)]
     pub fn activate(&mut self, gl:&GL){
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
         gl.enable_vertex_attrib_array(self.location);
         gl.vertex_attrib_pointer_with_i32(self.location, self.stride, GL::FLOAT, false, 0, 0);
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
+    #[allow(dead_code)]
     pub fn create_vbo_vector(&mut self, gl: &GL, data: &Vec<f32>) {
         self.buffer = gl.create_buffer();
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
@@ -826,6 +919,7 @@ impl GlAttributeColor{
         }
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
+    #[allow(dead_code)]
     pub fn unset_buffer(&mut self, gl:&GL){
         //gl.bind_buffer(GL::ARRAY_BUFFER, None);
         //gl.disable_vertex_attrib_array(self.location);
@@ -839,16 +933,20 @@ pub struct GlIndex{
     buffer:Option<WebGlBuffer>
 }
 impl GlIndex{
+    #[allow(dead_code)]
     pub fn new()->Self{
         GlIndex{ size:0, buffer:None }
     }
+    #[allow(dead_code)]
     pub fn set_buffer(&mut self, gl:&GL, data: &Vec<u16>){
         self.size = data.len() as i32;
         self.create_ibo_vector(gl, data);
     }
+    #[allow(dead_code)]
     pub fn activate(&mut self, gl:&GL){
         gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
     }
+    #[allow(dead_code)]
     pub fn create_ibo_vector(&mut self, gl: &GL, data: &Vec<u16>){
         self.buffer = gl.create_buffer();
         gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
@@ -859,6 +957,7 @@ impl GlIndex{
         gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, None);
     }
 
+    #[allow(dead_code)]
     pub fn unset_buffer(&mut self, gl:&GL){
         //gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, None);
         gl.delete_buffer(Some(&self.buffer.as_ref().unwrap()));
@@ -874,6 +973,7 @@ pub struct GlProgram{
 }
 
 impl GlProgram{
+    #[allow(dead_code)]
     pub fn new(vertex_shader_filename: &str, fragment_shader_filename:&str)->Self{
         GlProgram{
             vertex_shader_file:String::from(vertex_shader_filename),
@@ -881,6 +981,7 @@ impl GlProgram{
             program:None,
         }
     }
+    #[allow(dead_code)]
     pub fn init(&mut self, gl:&GL) {
         //self.program = Some(gl.create_program().ok_or_else(|| String::from("Error creating program"))?);
         self.program = gl.create_program();
@@ -892,6 +993,7 @@ impl GlProgram{
         gl.link_program(&self.program.as_ref().unwrap());
     }
 
+    #[allow(dead_code)]
     pub fn use_program(&self, gl:&GL){
         if gl.get_program_parameter(&self.program.as_ref().unwrap(), WebGlRenderingContext::LINK_STATUS).as_bool().unwrap_or(false) {
             gl.use_program(Some(&self.program.as_ref().unwrap()));
@@ -901,6 +1003,7 @@ impl GlProgram{
         }
     }
 
+    #[allow(dead_code)]
     pub fn compile(gl:&GL, shader_type: u32, source: &str)->Result<WebGlShader, String>{
         let shader = gl.create_shader(shader_type).ok_or_else(|| String::from("Error creating shader"))?;
         gl.shader_source(&shader, source);
@@ -922,18 +1025,22 @@ pub struct GlPoint{
     size: f32,
 }
 impl GlPoint{
+    #[allow(dead_code)]
     pub fn new(pos:Vec3)->Self{
         GlPoint{pos, color:Color::new(0.5,0.5,0.5,1.0), size:5.0, index:0}
     }
 
+    #[allow(dead_code)]
     pub fn  from_point(pt:&Point)->Self{
         GlPoint{pos:pt.pos, color:pt.attr.color, size:pt.attr.size, index:0}
     }
 
+    #[allow(dead_code)]
     pub fn set_index(&mut self, start_index:i32){
         self.index = start_index;
     }
 
+    #[allow(dead_code)]
     pub fn clr(&mut self, c:Color){
         self.color = c;
     }
@@ -947,10 +1054,12 @@ pub struct GlLine{
     index:i32,
 }
 impl GlLine{
+    #[allow(dead_code)]
     pub fn new(pos:Vec<Vec3>)->Self{
         GlLine{pos, color:Color::new(0.5,0.5,0.5,1.0), index:0}
     }
 
+    #[allow(dead_code)]
     pub fn  from_curve(curve:&Curve)->Self{
         let mut pts:Vec<Vec3> = Vec::new();
         if curve.deg()==1{
@@ -963,6 +1072,7 @@ impl GlLine{
             let reso = SEGMENT_RESOLUTION;
             let epnum = curve.ep_num();
             let num = (epnum-1)*(reso as usize)+1;
+            #[allow(unused_variables)]
             for i in 0..num{
                 pts.push(Vec3::zero());
             }
@@ -980,14 +1090,17 @@ impl GlLine{
     }
 
 
+    #[allow(dead_code)]
     pub fn clr(&mut self, c:Color){
         self.color = c;
     }
 
+    #[allow(dead_code)]
     pub fn set_index(&mut self, start_index:i32){
         self.index = start_index;
     }
 
+    #[allow(dead_code)]
     pub fn len(&self)->i32{ self.pos.len() as i32 }
 }
 
@@ -1000,8 +1113,9 @@ pub struct GlSurface{
 }
 
 impl GlSurface{
+    #[allow(dead_code)]
     pub fn  from_surface(surface:&Surface)->Self{
-        let isoparmRatio = TESSELLATION_RESOLUTION as usize;
+        let isoparm_ratio = TESSELLATION_RESOLUTION as usize;
 
         let mut uval:Vec<f64> = Vec::new();
         let mut vval:Vec<f64> = Vec::new();
@@ -1012,10 +1126,10 @@ impl GlSurface{
         }
         else{
             let epnum = surface.uep_num();
-            let num = (epnum-1)*isoparmRatio+1;
+            //let num = (epnum-1)*isoparm_ratio+1;
             for i in 0..epnum{
-                for j in 0..isoparmRatio{
-                    if i<epnum-1 || j==0{ uval.push(surface.u(i, j as f64 / isoparmRatio as f64)); }
+                for j in 0..isoparm_ratio{
+                    if i<epnum-1 || j==0{ uval.push(surface.u(i, j as f64 / isoparm_ratio as f64)); }
                 }
             }
         }
@@ -1026,10 +1140,10 @@ impl GlSurface{
         }
         else{
             let epnum = surface.vep_num();
-            let num = (epnum-1)*isoparmRatio+1;
+            //let num = (epnum-1)*isoparm_ratio+1;
             for i in 0..epnum{
-                for j in 0..isoparmRatio{
-                    if i<epnum-1 || j==0 { vval.push(surface.v(i, j as f64 / isoparmRatio as f64)); }
+                for j in 0..isoparm_ratio{
+                    if i<epnum-1 || j==0 { vval.push(surface.v(i, j as f64 / isoparm_ratio as f64)); }
                 }
             }
         }
@@ -1038,7 +1152,9 @@ impl GlSurface{
             let mut uinsert : Vec<bool> = Vec::new();
             let mut vinsert : Vec<bool> = Vec::new();
             let mut any_insert = false;
+            #[allow(unused_variables)]
             for i in 0..uval.len()-1{ uinsert.push(false); }
+            #[allow(unused_variables)]
             for i in 0..vval.len()-1{ vinsert.push(false); }
 
             for i in 0..uval.len()-1{
@@ -1060,8 +1176,8 @@ impl GlSurface{
                 for i in 0..uval.len()-1{
                     uval2.push(uval[i]);
                     if uinsert[i]{
-                        for j in 0..isoparmRatio{
-                            uval2.push( ( (uval[i+1]-uval[i])*j as f64)/isoparmRatio as f64 + uval[i]);
+                        for j in 0..isoparm_ratio{
+                            uval2.push( ( (uval[i+1]-uval[i])*j as f64)/isoparm_ratio as f64 + uval[i]);
                         }
                     }
                 }
@@ -1071,8 +1187,8 @@ impl GlSurface{
                 for i in 0..vval.len()-1{
                     vval2.push(vval[i]);
                     if vinsert[i]{
-                        for j in 0..isoparmRatio{
-                            vval2.push( ( (vval[i+1]-vval[i])*j as f64)/isoparmRatio as f64 + vval[i]);
+                        for j in 0..isoparm_ratio{
+                            vval2.push( ( (vval[i+1]-vval[i])*j as f64)/isoparm_ratio as f64 + vval[i]);
                         }
                     }
                 }
@@ -1105,52 +1221,27 @@ impl GlSurface{
             nml.push(vnml);
         }
 
-        //pts.push(Vec::from([Vec3::new(0.0,0.0,0.0), Vec3::new(1.0,0.0,0.0)]));
-        //pts.push(Vec::from([Vec3::new(0.0,1.0,0.0), Vec3::new(1.0,1.0,0.0)]));
-        //nml.push(Vec::from([Vec3::new(0.0,0.0,1.0), Vec3::new(0.0,0.0,1.0)]));
-        //nml.push(Vec::from([Vec3::new(0.0,0.0,1.0), Vec3::new(0.0,0.0,1.0)]));
-
-        /*
-        if curve.deg()==1{
-            let num = curve.num();
-            for i in 0..num{
-                pts.push(curve.cp(i).clone());
-            }
-        }
-        else{
-            let reso = SEGMENT_RESOLUTION;
-            let epnum = curve.epNum();
-            let num = (epnum-1)*(reso as usize)+1;
-            for i in 0..num{
-                pts.push(Vec3::zero());
-            }
-            for i in 0..epnum{
-                for j in 0..reso{
-                    if i<epnum-1 || j==0{
-                        let pt = curve.pt(curve.u(i, (j as f64)/(reso as f64)));
-                        pts[i*(reso as usize)+j as usize].set(&pt);
-                    }
-                }
-            }
-        }
-        */
-
         GlSurface{pos, nml, color:surface.attr.color, index:0}
     }
 
+    #[allow(dead_code)]
     pub fn new(pos:Vec<Vec<Vec3>>, nml:Vec<Vec<Vec3>>)->Self{
         GlSurface{pos, nml, color:Color::new(0.5,0.5,0.5,1.0), index:0}
     }
 
+    #[allow(dead_code)]
     pub fn set_index(&mut self, start_index:i32){
         self.index = start_index;
     }
 
+    #[allow(dead_code)]
     pub fn clr(&mut self, c:Color){
         self.color = c;
     }
 
+    #[allow(dead_code)]
     pub fn ulen(&self)->i32{ self.pos.len() as i32 }
+    #[allow(dead_code)]
     pub fn vlen(&self)->i32{ self.pos[0].len() as i32 }
 }
 
@@ -1159,9 +1250,11 @@ pub struct GlLineBuffer{
     //buffer: GlAttributeVec3,
 }
 impl GlLineBuffer{
+    #[allow(dead_code)]
     pub fn new()->Self{
         GlLineBuffer{pos:Vec::new()}
     }
+    #[allow(dead_code)]
     pub fn add(&mut self, line:&mut GlLine){
         let idx = (self.pos.len() as i32)/3; // divided by 3 or not?
         line.set_index(idx);
@@ -1171,6 +1264,7 @@ impl GlLineBuffer{
             self.pos.push(x.z as f32);
         }
     }
+    #[allow(dead_code)]
     pub fn clear(&mut self){
         self.pos.clear();
     }
@@ -1180,9 +1274,11 @@ pub struct GlPointBuffer{
     pos: Vec<f32>,
 }
 impl GlPointBuffer{
+    #[allow(dead_code)]
     pub fn new()->Self{
         GlPointBuffer{pos:Vec::new()}
     }
+    #[allow(dead_code)]
     pub fn add(&mut self, pt:&mut GlPoint){
         let idx = (self.pos.len() as i32)/3;
         pt.set_index(idx);
@@ -1192,6 +1288,7 @@ impl GlPointBuffer{
 //        web_sys::console::log_1(&JsValue::from(format!("GlPointBuffer.add: pt {}, {}, {}", pt.pos.x, pt.pos.y, pt.pos.z )));
 //        web_sys::console::log_1(&JsValue::from(format!("GlPointBuffer.add: pt.index {}", pt.index )));
     }
+    #[allow(dead_code)]
     pub fn clear(&mut self){
         self.pos.clear();
 //        web_sys::console::log_1(&JsValue::from(format!("GlPointBuffer.clear: pos.len() = {}", self.pos.len() )));
@@ -1203,9 +1300,11 @@ pub struct GlFaceBuffer{
     nml: Vec<f32>,
 }
 impl GlFaceBuffer{
+    #[allow(dead_code)]
     pub fn new()->Self{
         GlFaceBuffer{pos:Vec::new(), nml:Vec::new()}
     }
+    #[allow(dead_code)]
     pub fn add(&mut self, surf:&mut GlSurface){
         let idx = (self.pos.len() as i32)/3; // devided by 3 or not?
         surf.set_index(idx);
@@ -1234,6 +1333,7 @@ impl GlFaceBuffer{
             }
         }
     }
+    #[allow(dead_code)]
     pub fn clear(&mut self){
         self.pos.clear();
         self.nml.clear();
@@ -1251,6 +1351,12 @@ pub struct WebGlServer{
     mvp_matrix : GlUniformMatrix4,
     tmp_matrix : Matrix4,
     inv_matrix : GlUniformMatrix4,
+    camera_pitch: f64,
+    camera_yaw: f64,
+    camera_rotation:bool,
+    camera_rotation_speed:f64,
+    zoom_ratio: f64,
+    bg_colors: [Color;4],
     eye_direction : GlUniformVec3,
     light_direction : GlUniformVec3,
     ambient_color : GlUniformColor,
@@ -1271,7 +1377,7 @@ pub struct WebGlServer{
     bg_shader_program: GlProgram,
     //server:Option<&'a Server<'a>>,
 
-    time: u64,
+    time: i64,
 
     points: Vec<Box<GlPoint>>,
     point_buffer: GlPointBuffer,
@@ -1292,6 +1398,12 @@ impl WebGlServer{
             mvp_matrix: GlUniformMatrix4::new(Matrix4::zero(), "mvpMatrix"),
             tmp_matrix:Matrix4::zero(),
             inv_matrix: GlUniformMatrix4::new(Matrix4::zero(), "invMatrix"),
+            camera_pitch: PI/2.0,
+            camera_yaw: 0.0,
+            camera_rotation: false,
+            camera_rotation_speed: 1.0,
+            zoom_ratio : 1.0,
+            bg_colors: [Color::new(0.3,0.5,0.7,1.0), Color::new(0.3,0.5,0.7,1.0),Color::new(1.0,1.0,1.0,1.0), Color::new(0.9,0.9,0.9,1.0) ],
             eye_direction: GlUniformVec3::new(Vec3::new(0.0,0.0,15.0),"eyeDirection"),
             light_direction: GlUniformVec3::new(Vec3::new(-0.5,0.5,0.5), "lightDirection"),
             ambient_color: GlUniformColor::new(Color::new(0.2,0.2,0.2,1.0), "ambientColor"),
@@ -1322,36 +1434,88 @@ impl WebGlServer{
         }
     }
 
+    #[allow(dead_code)]
     pub fn add_point(&mut self, mut point : Box<GlPoint>){
         self.point_buffer.add(&mut*point);
         self.points.push(point)
     }
     //pub fn add_line(&mut self, line : &mut GlLine){
+    #[allow(dead_code)]
     pub fn add_line(&mut self, mut line : Box<GlLine>){
         self.line_buffer.add(&mut*line);
         self.lines.push(line)
     }
+    #[allow(dead_code)]
     pub fn add_surface(&mut self, mut surf : Box<GlSurface>){
         self.surf_buffer.add(&mut*surf);
         self.surfs.push(surf)
     }
 
+    #[allow(dead_code)]
     pub fn clear_points(&mut self){
         self.point_buffer.clear();
         self.points.clear();
 //        web_sys::console::log_1(&JsValue::from(format!("clear_points: point.len() = {}", self.points.len() ))); //
     }
 
+    #[allow(dead_code)]
     pub fn clear_lines(&mut self){
         self.line_buffer.clear();
         self.lines.clear();
     }
 
+    #[allow(dead_code)]
     pub fn clear_surfaces(&mut self){
         self.surf_buffer.clear();
         self.surfs.clear();
     }
 
+    #[allow(dead_code)]
+    pub fn set_zoom_ratio(&mut self, zoom:f64){
+        self.zoom_ratio = zoom;
+    }
+    #[allow(dead_code)]
+    pub fn enable_camera_rotation(&mut self, flag:bool){
+        self.camera_rotation = flag;
+    }
+    #[allow(dead_code)]
+    pub fn set_camera_rotation_speed(&mut self, speed:f64){
+        self.camera_rotation_speed = speed;
+    }
+    #[allow(dead_code)]
+    pub fn set_camera_pitch_angle(&mut self, pitch:f64){
+        self.camera_pitch = pitch;
+    }
+    #[allow(dead_code)]
+    pub fn set_camera_yaw_angle(&mut self, yaw:f64){
+        self.camera_yaw = yaw;
+    }
+
+    #[allow(dead_code)]
+    pub fn set_bg_color(&mut self, bgcolor:&Color){
+        self.bg_colors[0].set(bgcolor);
+        self.bg_colors[1].set(bgcolor);
+        self.bg_colors[2].set(bgcolor);
+        self.bg_colors[3].set(bgcolor);
+        self.set_bg();
+    }
+    #[allow(dead_code)]
+    pub fn set_bg_colors(&mut self, bgcolor1:&Color, bgcolor2:&Color, bgcolor3:&Color, bgcolor4:&Color){
+        self.bg_colors[0].set(bgcolor1);
+        self.bg_colors[1].set(bgcolor2);
+        self.bg_colors[2].set(bgcolor3);
+        self.bg_colors[3].set(bgcolor4);
+        self.set_bg();
+    }
+
+    #[allow(dead_code)]
+    pub fn set_bg(&mut self){
+        let bg_geom = WebGlServer::bg_rect(self.bg_colors[0], self.bg_colors[1], self.bg_colors[2], self.bg_colors[3] );
+        self.bg_position_attr.set_buffer(&self.gl, &bg_geom.0);
+        self.bg_color_attr.set_buffer(&self.gl, &bg_geom.1);
+    }
+
+    #[allow(dead_code)]
     pub fn init(&mut self){
 
         self.bg_shader_program.init(&self.gl);
@@ -1390,7 +1554,7 @@ impl WebGlServer{
 
 
         self.v_matrix = Matrix4::look_at(&self.eye_direction.vec, &Vec3::new(0.0,0.0,0.0), &Vec3::new(0.0,1.0,0.0));
-        self.p_matrix = Matrix4::perspective( (self.width/self.height) as f64, 45.0/*std::f64::consts::PI/4.*/, 0.1, 100.0);
+        self.p_matrix = Matrix4::perspective( (self.width/self.height) as f64, PI/4., 0.1, 100.0);
         self.tmp_matrix = Matrix4::new_with_matrix4(&self.v_matrix);
         self.tmp_matrix.matmul(&self.p_matrix);
 
@@ -1399,7 +1563,7 @@ impl WebGlServer{
         //web_sys::console::log_1(&JsValue::from(format!("T{:?}", self.tmp_matrix.to_array32())));
 
         //let bg_geom = WebGlServer::bg_rect(Color::new(1.0,0.5,0.0,1.0), Color::new(1.0,0.0,0.0,1.0), Color::new(0.0,1.0,1.0,1.0), Color::new(0.5,0.5,1.0,1.0) );
-        let bg_geom = WebGlServer::bg_rect(Color::new(0.3,0.5,0.7,1.0), Color::new(0.3,0.5,0.7,1.0),Color::new(1.0,1.0,1.0,1.0), Color::new(0.9,0.9,0.9,1.0) );
+        let bg_geom = WebGlServer::bg_rect(self.bg_colors[0], self.bg_colors[1], self.bg_colors[2], self.bg_colors[3] );
         self.bg_position_attr.set_buffer(&self.gl, &bg_geom.0);
         self.bg_color_attr.set_buffer(&self.gl, &bg_geom.1);
         //self.bg_index.set_buffer(&self.gl, &bg_geom.2);
@@ -1435,16 +1599,16 @@ impl WebGlServer{
 
         //Webgl initialize
         let i:f64 = (count % 360) as f64;
-        let rad = i * std::f64::consts::PI / 180.;
-        //let rad = std::f64::consts::PI / 2.0;
-        //let rad = 0.0;
+        let mut rad =  i * PI / 180. * self.camera_rotation_speed + self.camera_yaw ;
+        if ! self.camera_rotation{ rad = self.camera_yaw; }
+
 
         //view rotation
         //self.m_matrix = Matrix4::y_rotation(rad);
-        self.m_matrix = Matrix4::x_rotation(std::f64::consts::PI/2.0);
+        self.m_matrix = Matrix4::x_rotation(PI/2.0);
         self.m_matrix.matmul(&Matrix4::y_rotation(rad));
-        self.m_matrix.matmul(&Matrix4::x_rotation(-std::f64::consts::PI/3.0));
-
+        self.m_matrix.matmul(&Matrix4::x_rotation(-self.camera_pitch));
+        self.m_matrix.matmul(&Matrix4::scale(self.zoom_ratio));
 
         self.mvp_matrix.mat = Matrix4::new_with_matrix4(&self.m_matrix);
         self.mvp_matrix.mat.matmul(&self.tmp_matrix);
@@ -1475,7 +1639,6 @@ impl WebGlServer{
                 self.gl.draw_arrays(GL::POINTS, pt.index, 1 );
         }
         point_pos_attr.unset_buffer(&self.gl);
-
 
         // drawing lines
         self.line_shader_program.use_program(&self.gl);
@@ -1553,6 +1716,7 @@ impl WebGlServer{
         self.time+=1;
     }
 
+    #[allow(dead_code)]
     pub fn bg_rect(clr1:Color, clr2:Color, clr3:Color, clr4:Color)->(Vec<f32>, Vec<f32>, Vec<u16>){
         let mut pos = Vec::new();
         let mut clr = Vec::new();
@@ -1567,6 +1731,7 @@ impl WebGlServer{
         (pos, clr, idx)
     }
 
+    #[allow(dead_code)]
     pub fn get_webgl_context(height: u32, width: u32) -> Result<WebGlRenderingContext, String> {
         //Get WebGLContext
         let document = window().unwrap().document().unwrap();
@@ -1603,26 +1768,40 @@ impl WebGlServer{
 ******************/
 
 pub const SEGMENT_RESOLUTION : u32 = 20; //10;
-pub const TESSELLATION_RESOLUTION : u32 = 1; // 5; //10; //5;
+pub const TESSELLATION_RESOLUTION : u32 = 10; //5;
 
 pub const INSERT_POINT_ON_DEGREE1_TWISTED_SURFACE : bool = true;
 
+#[allow(dead_code)]
 pub const DEFAULT_GL_LIGHT_POSITION : [f32;4] = [0.0, 0.0, 1.0, 0.0];
+#[allow(dead_code)]
 pub const DEFAULT_GL_AMBIENT_LIGHT : [f32;4] = [0.4, 0.4, 0.4, 1.0];
+#[allow(dead_code)]
 pub const DEFAULT_GL_DIFFUSE_LIGHT : [f32;4] = [0.7, 0.7, 0.7, 1.0];
+#[allow(dead_code)]
 pub const DEFAULT_GL_SPECULAR_LIGHT : [f32;4] = [0.0, 0.0, 0.0, 1.0];
 
+#[allow(dead_code)]
 pub const DEFAULT_PERSPECTIVE_RATIO : f32  = 0.5;
+#[allow(dead_code)]
 pub const DEFAULT_AXONOMETRIC_RATIO : f32 = 1.0;
+#[allow(dead_code)]
 pub const DEFAULT_VIEW_DISTANCE : f32 = 500.0;
+#[allow(dead_code)]
 pub const DEFAULT_VIEW_DISTANCE_RATIO : f32 = 10.0;
+#[allow(dead_code)]
 pub const DEFAULT_NEAR_VIEW_RATIO : f32 = 0.001;
+#[allow(dead_code)]
 pub const DEFAULT_FAR_VIEW_RATIO : f32 = 1000.0;
 
 
+#[allow(dead_code)]
 pub const DEFAULT_BG_COLOR1 : Color = Color{ rgba:[1.0, 1.0, 1.0, 1.0] };
+#[allow(dead_code)]
 pub const DEFAULT_BG_COLOR2 : Color = Color{ rgba:[0.9, 0.9, 0.9, 1.0] };
+#[allow(dead_code)]
 pub const DEFAULT_BG_COLOR3 : Color = Color{ rgba:[0.3, 0.5, 0.7, 1.0] };
+#[allow(dead_code)]
 pub const DEFAULT_BG_COLOR4 : Color = Color{ rgba:[0.3, 0.5, 0.7, 1.0] };
 
 pub struct View{
@@ -1656,6 +1835,7 @@ pub struct View{
 }
 
 impl View{
+    #[allow(dead_code)]
     pub fn new(x:f64, y:f64, z:f64, yaw:f32, pitch:f32, roll:f32,
         screen_x:u32, screen_y:u32, screen_width:u32, screen_height:u32, axonometric:bool) -> Self{
             View{
@@ -1718,7 +1898,7 @@ pub struct Agent{
     pub fric:f64,
     pub dir:Vec3,
     pub nml:Vec3,
-    pub time:i32,
+    pub time:i64,
     pub colliding:bool,
     pub vecs:Vec<Vec3>,
     pub params:Vec<f64>,
@@ -1727,24 +1907,31 @@ pub struct Agent{
 
 
 impl Agent{
+    #[allow(dead_code)]
     pub fn new(pos:Vec3)->Self{
         Agent{id:-1, pos, vel:Vec3::zero(), frc:Vec3::zero(), fric:0.0, dir:Vec3::zero(), nml:Vec3::zero(), time:0, colliding:false, vecs:Vec::new(), params:Vec::new(), attr:Attribute::default() }
     }
+    #[allow(dead_code)]
     pub fn new_with_dir(pos:Vec3, dir:Vec3)->Self{
         Agent{id:-1, pos, vel:Vec3::zero(), frc:Vec3::zero(), fric:0.0, dir, nml:Vec3::zero(), time:0, colliding:false, vecs:Vec::new(), params:Vec::new(), attr:Attribute::default() }
     }
     //fn init(&dyn self, server: &mut Server){ server.add_agent(Box::new(self)); }
+    #[allow(dead_code)]
     pub fn set_id(&mut self, i:i32){ self.id = i; }
+    #[allow(dead_code)]
     pub fn get_id(&mut self)->i32{ return self.id; }
 
+    #[allow(dead_code)]
     pub fn clr(&mut self, r:f32, g:f32, b:f32, a:f32)->&mut Agent{
         self.attr.color.set_rgba(r,g,b,a);
         self
     }
+    #[allow(dead_code)]
     pub fn hsb(&mut self, h:f32, s:f32, b:f32, a:f32)->&mut Agent{
         self.attr.color.set_hsb(h,s,b,a);
         self
     }
+    #[allow(dead_code)]
     pub fn set_attr(&mut self, attr:&Attribute)->&mut Agent{
         self.attr.set(attr);
         self
@@ -1757,24 +1944,6 @@ impl Agent{
     //fn interact(&mut self, agent: Vec<Box<Agent>>, storage:&mut DataManager){}
     //fn update(&mut self, storage:&mut DataManager){}
 
-    //fn attr(&self)->&mut Attribute;
-
-    //fn set_server(&mut self, server:Box<Server>);
-    //fn get_server(&mut self)->&Box<Server>;
-
-}
-
-pub trait AgentBak{
-    //fn init(&dyn self, server: &mut Server){ server.add_agent(Box::new(self)); }
-    fn set_id(&mut self, i:i32){}
-    fn get_id(&mut self)->i32{ return -1; }
-
-    //fn clone(&self)->Self;
-    //fn test(&self)->Self{ Self{}}
-
-    //fn interact(&mut self, agents:&Vec<&Box<dyn Agent>>, storage:&mut DataManager){}
-    fn interact(&mut self, agent: &dyn AgentBak, storage:&mut DataManager){}
-    fn update(&mut self, storage:&mut DataManager){}
     //fn attr(&self)->&mut Attribute;
 
     //fn set_server(&mut self, server:Box<Server>);
@@ -1800,7 +1969,7 @@ impl Dynamic{
 pub struct Attribute/*<'a>*/{
     pub name: String,
     //layer: &'a Layer<'a>,
-    pub layerIndex: u32,
+    pub layer_index: u32,
     pub color: /*'a*/ Color,
     pub stroke: /*'a*/ Color,
     pub size: f32,
@@ -1810,16 +1979,18 @@ pub struct Attribute/*<'a>*/{
 }
 
 impl Attribute{
+    #[allow(dead_code)]
     pub fn default()->Self{
         Attribute{
-            name: String::from("default"), layerIndex:0,
+            name: String::from("default"), layer_index:0,
             color: Color::new(0.5,0.5,0.5,1.0), stroke: Color::new(0.5,0.5,0.5,1.0),
             size: 5.0, weight: 1.0, visible:true
         }
     }
+    #[allow(dead_code)]
     pub fn set(&mut self, attr:&Attribute){
         self.name = attr.name.clone();
-        self.layerIndex = attr.layerIndex;
+        self.layer_index = attr.layer_index;
         self.color.set(&attr.color);
         self.stroke.set(&attr.stroke);
         self.size = attr.size;
@@ -1840,18 +2011,21 @@ pub struct Color{
 
 
 impl Color{
+    #[allow(dead_code)]
     pub fn new(r:f32, g:f32, b:f32, a:f32)->Self{
         Color{
             rgba:[r,g,b,a]
         }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_rgb(r:f32, g:f32, b:f32)->Self{
         Color{
             rgba:[r,g,b,1.0]
         }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_hsb(mut h:f32, s:f32, b:f32, a:f32)->Self{
         if h<0.0 { h += (-h+1.0).floor(); }
         else if h>1.0 { h -= h.floor(); }
@@ -1864,12 +2038,14 @@ impl Color{
         return Color::new(b, b*(1.0-s), b*(1.0-s*frac), a);
     }
 
+    #[allow(dead_code)]
     pub fn set_rgb(&mut self, r:f32, g:f32, b:f32){
         self.rgba[0] = r;
         self.rgba[1] = g;
         self.rgba[2] = b;
     }
 
+    #[allow(dead_code)]
     pub fn set(&mut self, color:&Color){
         self.rgba[0] = color.rgba[0];
         self.rgba[1] = color.rgba[1];
@@ -1877,6 +2053,7 @@ impl Color{
         self.rgba[3] = color.rgba[3];
     }
 
+    #[allow(dead_code)]
     pub fn set_rgba(&mut self, r:f32, g:f32, b:f32, a:f32){
         self.rgba[0] = r;
         self.rgba[1] = g;
@@ -1884,6 +2061,7 @@ impl Color{
         self.rgba[3] = a;
     }
 
+    #[allow(dead_code)]
     pub fn set_hsb(&mut self, mut h:f32, s:f32, b:f32, a:f32){
         if h<0.0 { h += (-h+1.0).floor(); }
         else if h>1.0 { h -= h.floor(); }
@@ -1896,36 +2074,47 @@ impl Color{
         else{ self.set_rgba(b, b*(1.0-s), b*(1.0-s*frac), a); }
     }
 
+    #[allow(dead_code)]
     pub fn red(&self)->f32{
         self.rgba[0]
     }
+    #[allow(dead_code)]
     pub fn green(&self)->f32{
         self.rgba[1]
     }
+    #[allow(dead_code)]
     pub fn blue(&self)->f32{
         self.rgba[2]
     }
+    #[allow(dead_code)]
     pub fn alpha(&self)->f32{
         self.rgba[3]
     }
+    #[allow(dead_code)]
     pub fn to_array(&self)->[f32;4]{
         self.rgba
     }
 
+    #[allow(dead_code)]
     pub fn r(&self)->f32{ self.red() }
+    #[allow(dead_code)]
     pub fn g(&self)->f32{ self.green() }
+    #[allow(dead_code)]
     pub fn b(&self)->f32{ self.blue() }
+    #[allow(dead_code)]
     pub fn a(&self)->f32{ self.alpha() }
 
 }
 
 impl fmt::Display for Color{
+    #[allow(dead_code)]
     fn fmt(&self, f:&mut fmt::Formatter)->fmt::Result{
         write!(f, "({},{},{},{})", self.rgba[0], self.rgba[1], self.rgba[2],self.rgba[3])
     }
 }
 
 
+#[allow(dead_code)]
 pub struct Layer/*<'a>*/{
 //    object: Object,
 //    objects: Vec<&/*'a*/ Object/*<'a>*/> // containing objects
@@ -1948,58 +2137,73 @@ pub struct Curve/*<'a>*/{
 }
 
 impl Curve{
+    #[allow(dead_code)]
     pub fn new(cpts:Vec<Vec3>, degree:u8)->Self{
         Curve{ id:-1, curve:CurveGeo::new(cpts, degree),attr:Attribute::default()}
     }
+    #[allow(dead_code)]
     pub fn new_closed(cpts:Vec<Vec3>, degree:u8)->Self{
         Curve{ id:-1, curve:CurveGeo::new_closed(cpts, degree),attr:Attribute::default()}
     }
-    pub fn new_with_knots(cpts:Vec<Vec3>, degree:u8, mut knots:Vec<f64>, ustart:f64, uend:f64)->Self{
+    #[allow(dead_code)]
+    pub fn new_with_knots(cpts:Vec<Vec3>, degree:u8, knots:Vec<f64>, ustart:f64, uend:f64)->Self{
         Curve{ id:-1, curve:CurveGeo::new_with_knots(cpts, degree, knots, ustart, uend),attr:Attribute::default()}
     }
+    #[allow(dead_code)]
     pub fn new_polyline(cpts:Vec<Vec3>)->Self{
         Curve::new(cpts, 1)
     }
+    #[allow(dead_code)]
     pub fn new_line(pt1:Vec3, pt2:Vec3)->Self{
         Curve::new(Vec::from([pt1,pt2]), 1)
     }
-
+    #[allow(dead_code)]
     pub fn pt(&self, u:f64)->Vec3{
         self.curve.pt(u)
     }
 
+    #[allow(dead_code)]
     pub fn tan(&self, u:f64)->Vec3{
         self.curve.tan(u)
     }
 
+    #[allow(dead_code)]
     pub fn deg(&self)->u8{
         self.curve.deg()
     }
+    #[allow(dead_code)]
 
+    #[allow(dead_code)]
     pub fn num(&self)->usize{
         self.curve.num()
     }
 
+    #[allow(dead_code)]
     pub fn ep_num(&self)->usize{
-        self.curve.epNum()
+        self.curve.ep_num()
     }
 
+    #[allow(dead_code)]
     pub fn cp(&self, i:usize)->Vec3{
         self.curve.cp(i)
     }
 
-    pub fn u(&self, epIdx:usize, epFraction:f64)->f64{
-        self.curve.u(epIdx, epFraction)
+    #[allow(dead_code)]
+    pub fn u(&self, ep_idx:usize, ep_frac:f64)->f64{
+        self.curve.u(ep_idx, ep_frac)
     }
 
+    #[allow(dead_code)]
     pub fn clr(&mut self, r:f32, g:f32, b:f32, a:f32)->&mut Curve{
         self.attr.color.set_rgba(r,g,b,a);
         self
     }
+    #[allow(dead_code)]
     pub fn hsb(&mut self, h:f32, s:f32, b:f32, a:f32)->&mut Curve{
         self.attr.color.set_hsb(h,s,b,a);
         self
     }
+    #[allow(dead_code)]
     pub fn set_attr(&mut self, attr:&Attribute)->&mut Curve{
         self.attr.set(attr);
         self
@@ -2013,66 +2217,79 @@ pub struct CurveGeo{
     cpts: Vec<Vec3>,
     degree: u8,
     knots: Vec<f64>,
+    #[allow(dead_code)]
     ustart: f64,
+    #[allow(dead_code)]
     uend: f64,
     weights:Vec<f64>,
-    basisFunction:BSplineBasisFunction,
-    derivativeFunction: BSplineBasisFunction,
+    basis_function:BSplineBasisFunction,
+    derivative_function: BSplineBasisFunction,
 }
 
 impl CurveGeo{
+    #[allow(dead_code)]
     pub fn new_with_knots(cpts:Vec<Vec3>, degree:u8, mut knots:Vec<f64>, ustart:f64, uend:f64)->Self{
         if ustart != 0.0 || uend != 1.0{
             knots = NurbsGeo::normalize_knots(knots, &ustart, &uend);
         }
-        let basisFunction = BSplineBasisFunction::new(degree, knots.clone());
-        let mut derivativeFunction = BSplineBasisFunction::new(degree, knots.clone());
-        derivativeFunction.differentiate();
+        let basis_function = BSplineBasisFunction::new(degree, knots.clone());
+        let mut derivative_function = BSplineBasisFunction::new(degree, knots.clone());
+        derivative_function.differentiate();
         let mut weights : Vec<f64> = Vec::new();
+        #[allow(unused_variables)]
         for i in 0..cpts.len(){ weights.push(1.0); }
 
         CurveGeo{
-            cpts, degree, knots, ustart, uend, weights, basisFunction, derivativeFunction
+            cpts, degree, knots, ustart, uend, weights, basis_function, derivative_function
         }
     }
 
+    #[allow(dead_code)]
     pub fn new(cpts:Vec<Vec3>, degree:u8)->Self{
         let knots = NurbsGeo::create_open_knots(degree, cpts.len());
         CurveGeo::new_with_knots(cpts, degree, knots, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn new_closed(cpts:Vec<Vec3>, degree:u8)->Self{
         let cpts2 = NurbsGeo::create_closed_cp(cpts, degree);
         let knots = NurbsGeo::create_closed_knots(degree, cpts2.len());
         CurveGeo::new_with_knots(cpts2, degree, knots, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn deg(&self)->u8{
         self.degree
     }
 
+    #[allow(dead_code)]
     pub fn num(&self)->usize{
         self.cpts.len()
     }
 
-    pub fn epNum(&self)->usize{
+    #[allow(dead_code)]
+    pub fn ep_num(&self)->usize{
         self.knots.len() - 2*(self.degree as usize)
     }
 
+    #[allow(dead_code)]
     pub fn cp(&self, i:usize)->Vec3{
         self.cpts[i]
     }
 
-    pub fn u(&self, epIdx:usize, epFraction:f64)->f64{
-        if epFraction>=0.0{
-            return self.knots[epIdx+self.degree as usize] + (self.knots[epIdx+self.degree as usize+1] - self.knots[epIdx+self.degree as usize])*epFraction;
+    #[allow(dead_code)]
+    #[allow(dead_code)]
+    pub fn u(&self, ep_idx:usize, ep_frac:f64)->f64{
+        if ep_frac>=0.0{
+            return self.knots[ep_idx+self.degree as usize] + (self.knots[ep_idx+self.degree as usize+1] - self.knots[ep_idx+self.degree as usize])*ep_frac;
         }
-        return self.knots[epIdx+self.degree as usize] + (self.knots[epIdx+self.degree as usize] - self.knots[epIdx+self.degree as usize-1])*epFraction;
+        return self.knots[ep_idx+self.degree as usize] + (self.knots[ep_idx+self.degree as usize] - self.knots[ep_idx+self.degree as usize-1])*ep_frac;
     }
 
+    #[allow(dead_code)]
     pub fn pt(&self, u:f64)->Vec3{
-        let index = self.basisFunction.index(u);
-        let n:Vec<f64> = self.basisFunction.eval_with_index(index, u);
+        let index = self.basis_function.index(u);
+        let n:Vec<f64> = self.basis_function.eval_with_index(index, u);
         let mut weight:f64 = 0.0;
         let mut retval:Vec3 = Vec3::zero();
         for i in 0..=self.degree as usize{
@@ -2089,10 +2306,11 @@ impl CurveGeo{
         retval
     }
 
+    #[allow(dead_code)]
     pub fn tan(&self, u:f64)->Vec3{
-        let index = self.derivativeFunction.index(u);
-        let dn : Vec<f64> = self.derivativeFunction.eval_with_index(index, u);
-        let n : Vec<f64> = self.basisFunction.eval_with_index(index, u);
+        let index = self.derivative_function.index(u);
+        let dn : Vec<f64> = self.derivative_function.eval_with_index(index, u);
+        let n : Vec<f64> = self.basis_function.eval_with_index(index, u);
         let mut val1: Vec3 = Vec3::zero();
         let mut val2: Vec3 = Vec3::zero();
         let mut weight1 : f64 = 0.0;
@@ -2126,6 +2344,8 @@ impl CurveGeo{
 
 pub struct NurbsGeo{}
 impl NurbsGeo{
+
+    #[allow(dead_code)]
     pub fn normalize_knots(mut knots:Vec<f64>, ustart:&f64, uend:&f64)->Vec<f64>{
         for i in 0..knots.len(){
             knots[i] -= ustart;
@@ -2134,6 +2354,7 @@ impl NurbsGeo{
         knots
     }
 
+    #[allow(dead_code)]
     pub fn create_knots(degree:u8, num:usize, closed:bool)->Vec<f64>{
         if closed{
             return NurbsGeo::create_closed_knots(degree, num);
@@ -2141,6 +2362,7 @@ impl NurbsGeo{
         NurbsGeo::create_open_knots(degree,num)
     }
 
+    #[allow(dead_code)]
     pub fn create_closed_knots(degree:u8, num:usize)->Vec<f64>{
         let mut knots : Vec<f64> = Vec::new();
         let inc : f64 = 1.0/(num-(degree as usize))as f64;
@@ -2153,6 +2375,7 @@ impl NurbsGeo{
         }
         knots
     }
+    #[allow(dead_code)]
     pub fn create_open_knots(degree:u8, num:usize)->Vec<f64>{
         let mut knots : Vec<f64> = Vec::new();
         let mut k : usize = 0;
@@ -2174,6 +2397,7 @@ impl NurbsGeo{
         knots
     }
 
+    #[allow(dead_code)]
     pub fn create_closed_cp(cpts:Vec<Vec3>, degree:u8)->Vec<Vec3>{
         let head_num :usize = (degree as usize -1)/2;
         let tail_num :usize = (degree as usize)/2 +1;
@@ -2200,11 +2424,12 @@ impl NurbsGeo{
         cpts2
     }
 
+    #[allow(dead_code)]
     pub fn create_closed_cp_in_u(cpts:Vec<Vec<Vec3>>, udeg:u8)->Vec<Vec<Vec3>>{
         let head_num :usize = (udeg as usize -1)/2;
         let tail_num :usize = (udeg as usize)/2 +1;
         let mut ulen = cpts.len();
-        let mut vlen = cpts[0].len();
+        let vlen = cpts[0].len();
         let mut is_edge_closed :bool = true;
         for i in 0..vlen{
             if !is_edge_closed{ break; }
@@ -2214,9 +2439,7 @@ impl NurbsGeo{
         }
         if is_edge_closed{
             if udeg==1{
-                for i in 0..vlen{
-                    return cpts;
-                }
+                return cpts;
             }
             ulen-=1;
         }
@@ -2233,10 +2456,11 @@ impl NurbsGeo{
         cpts2
     }
 
+    #[allow(dead_code)]
     pub fn create_closed_cp_in_v(cpts:Vec<Vec<Vec3>>, vdeg:u8)->Vec<Vec<Vec3>>{
         let head_num :usize = (vdeg as usize -1)/2;
         let tail_num :usize = (vdeg as usize)/2 +1;
-        let mut ulen = cpts.len();
+        let ulen = cpts.len();
         let mut vlen = cpts[0].len();
         let mut is_edge_closed : bool = true;
         for i in 0..ulen{
@@ -2247,9 +2471,7 @@ impl NurbsGeo{
         }
         if is_edge_closed{
             if vdeg==1{
-                for i in 0..ulen{
-                    return cpts;
-                }
+                return cpts;
             }
             vlen-=1;
         }
@@ -2270,6 +2492,7 @@ impl NurbsGeo{
 }
 
 pub struct Surface{
+    #[allow(dead_code)]
     id: i32,
     surface: SurfaceGeo,
     pub attr: Attribute
@@ -2277,88 +2500,112 @@ pub struct Surface{
 
 
 impl Surface{
+    #[allow(dead_code)]
     pub fn new(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
         Surface{ id:-1, surface:SurfaceGeo::new(cpts, udegree, vdegree), attr:Attribute::default()}
     }
+    #[allow(dead_code)]
     pub fn new_u_closed(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
         Surface{ id:-1, surface:SurfaceGeo::new_u_closed(cpts, udegree, vdegree),attr:Attribute::default()}
     }
+    #[allow(dead_code)]
     pub fn new_v_closed(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
         Surface{ id:-1, surface:SurfaceGeo::new_v_closed(cpts, udegree, vdegree),attr:Attribute::default()}
     }
+    #[allow(dead_code)]
     pub fn new_uv_closed(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
         Surface{ id:-1, surface:SurfaceGeo::new_uv_closed(cpts, udegree, vdegree),attr:Attribute::default()}
     }
-    pub fn new_with_knots(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8, mut uknots:Vec<f64>, mut vknots:Vec<f64>, ustart:f64, uend:f64, vstart:f64, vend:f64)->Self{
+    #[allow(dead_code)]
+    pub fn new_with_knots(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8, uknots:Vec<f64>, vknots:Vec<f64>, ustart:f64, uend:f64, vstart:f64, vend:f64)->Self{
         Surface{ id:-1, surface:SurfaceGeo::new_with_knots(cpts, udegree, vdegree, uknots, vknots, ustart, uend, vstart, vend),attr:Attribute::default()}
     }
+    #[allow(dead_code)]
     pub fn new_quad(pt1:Vec3, pt2:Vec3, pt3:Vec3, pt4:Vec3)->Self{
         Surface::new(Vec::from([Vec::from([pt1,pt2]),Vec::from([pt4,pt3])]), 1, 1)
     }
+
+    #[allow(dead_code)]
     pub fn new_triangle(pt1:Vec3, pt2:Vec3, pt3:Vec3)->Self{
         Surface::new(Vec::from([Vec::from([pt1,pt2]),Vec::from([pt3,pt3.clone()])]), 1, 1)
     }
 
+    #[allow(dead_code)]
     pub fn pt(&self, u:f64, v:f64)->Vec3{
         self.surface.pt(u,v)
     }
 
+    #[allow(dead_code)]
     pub fn utan(&self, u:f64, v:f64)->Vec3{
         self.surface.utan(u, v)
     }
 
+    #[allow(dead_code)]
     pub fn vtan(&self, u:f64, v:f64)->Vec3{
         self.surface.vtan(u, v)
     }
 
+    #[allow(dead_code)]
     pub fn nml(&self, u:f64, v:f64)->Vec3{
         self.surface.nml(u, v)
     }
 
 
+    #[allow(dead_code)]
     pub fn udeg(&self)->u8{
         self.surface.udeg()
     }
+    #[allow(dead_code)]
     pub fn vdeg(&self)->u8{
         self.surface.vdeg()
     }
 
+    #[allow(dead_code)]
     pub fn unum(&self)->usize{
         self.surface.unum()
     }
-
+    #[allow(dead_code)]
     pub fn vnum(&self)->usize{
         self.surface.vnum()
     }
 
+    #[allow(dead_code)]
     pub fn uep_num(&self)->usize{
         self.surface.uep_num()
     }
 
+    #[allow(dead_code)]
     pub fn vep_num(&self)->usize{
         self.surface.uep_num()
     }
 
+    #[allow(dead_code)]
     pub fn cp(&self, i:usize, j:usize)->Vec3{
         self.surface.cp(i, j)
     }
 
-    pub fn u(&self, epIdx:usize, epFraction:f64)->f64{
-        self.surface.u(epIdx, epFraction)
+    #[allow(dead_code)]
+    pub fn u(&self, ep_idx:usize, ep_frac:f64)->f64{
+        self.surface.u(ep_idx, ep_frac)
     }
 
-    pub fn v(&self, epIdx:usize, epFraction:f64)->f64{
-        self.surface.v(epIdx, epFraction)
+    #[allow(dead_code)]
+    pub fn v(&self, ep_idx:usize, ep_frac:f64)->f64{
+        self.surface.v(ep_idx, ep_frac)
     }
 
+
+    #[allow(dead_code)]
     pub fn clr(&mut self, r:f32, g:f32, b:f32, a:f32)->&mut Surface{
         self.attr.color.set_rgba(r,g,b,a);
         self
     }
+    #[allow(dead_code)]
     pub fn hsb(&mut self, h:f32, s:f32, b:f32, a:f32)->&mut Surface{
         self.attr.color.set_hsb(h,s,b,a);
         self
     }
+    #[allow(dead_code)]
     pub fn set_attr(&mut self, attr:&Attribute)->&mut Surface{
         self.attr.set(attr);
         self
@@ -2373,18 +2620,23 @@ pub struct SurfaceGeo{
     vdegree: u8,
     uknots: Vec<f64>,
     vknots: Vec<f64>,
+    #[allow(dead_code)]
     ustart: f64,
+    #[allow(dead_code)]
     uend: f64,
+    #[allow(dead_code)]
     vstart: f64,
+    #[allow(dead_code)]
     vend: f64,
     weights:Vec<Vec<f64>>,
-    basisFunctionU:BSplineBasisFunction,
-    basisFunctionV:BSplineBasisFunction,
-    derivativeFunctionU: BSplineBasisFunction,
-    derivativeFunctionV: BSplineBasisFunction,
+    basis_function_u:BSplineBasisFunction,
+    basis_function_v:BSplineBasisFunction,
+    derivative_function_u: BSplineBasisFunction,
+    derivative_function_v: BSplineBasisFunction,
 }
 
 impl SurfaceGeo{
+    #[allow(dead_code)]
     pub fn new_with_knots(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8, mut uknots:Vec<f64>, mut vknots:Vec<f64>, ustart:f64, uend:f64, vstart:f64, vend:f64)->Self{
         if ustart != 0.0 || uend != 1.0{
             uknots = NurbsGeo::normalize_knots(uknots, &ustart, &uend);
@@ -2392,14 +2644,15 @@ impl SurfaceGeo{
         if vstart != 0.0 || vend != 1.0{
             vknots = NurbsGeo::normalize_knots(vknots, &vstart, &vend);
         }
-        let basisFunctionU = BSplineBasisFunction::new(udegree, uknots.clone());
-        let mut derivativeFunctionU = BSplineBasisFunction::new(udegree, uknots.clone());
-        derivativeFunctionU.differentiate();
-        let basisFunctionV = BSplineBasisFunction::new(vdegree, vknots.clone());
-        let mut derivativeFunctionV = BSplineBasisFunction::new(vdegree, vknots.clone());
-        derivativeFunctionV.differentiate();
+        let basis_function_u = BSplineBasisFunction::new(udegree, uknots.clone());
+        let mut derivative_function_u = BSplineBasisFunction::new(udegree, uknots.clone());
+        derivative_function_u.differentiate();
+        let basis_function_v = BSplineBasisFunction::new(vdegree, vknots.clone());
+        let mut derivative_function_v = BSplineBasisFunction::new(vdegree, vknots.clone());
+        derivative_function_v.differentiate();
 
         let mut weights : Vec<Vec<f64>> = Vec::new();
+        #[allow(unused_variables)]
         for i in 0..cpts.len(){
             let mut w : Vec<f64> = Vec::new();
             for j in 0..cpts[i].len(){
@@ -2409,16 +2662,18 @@ impl SurfaceGeo{
         }
 
         SurfaceGeo{
-            cpts, udegree, vdegree, uknots, vknots, ustart, uend, vstart, vend, weights, basisFunctionU, basisFunctionV, derivativeFunctionU, derivativeFunctionV
+            cpts, udegree, vdegree, uknots, vknots, ustart, uend, vstart, vend, weights, basis_function_u, basis_function_v, derivative_function_u, derivative_function_v
         }
     }
 
+    #[allow(dead_code)]
     pub fn new(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
         let uknots = NurbsGeo::create_open_knots(udegree, cpts.len());
         let vknots = NurbsGeo::create_open_knots(vdegree, cpts[0].len());
         SurfaceGeo::new_with_knots(cpts, udegree, vdegree, uknots, vknots, 0.0, 1.0, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn new_uv_closed(mut cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
         cpts = NurbsGeo::create_closed_cp_in_v(cpts, vdegree);
         cpts = NurbsGeo::create_closed_cp_in_u(cpts, udegree);
@@ -2429,6 +2684,7 @@ impl SurfaceGeo{
         SurfaceGeo::new_with_knots(cpts, udegree, vdegree, uknots, vknots, 0.0, 1.0, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn new_u_closed(mut cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
         cpts = NurbsGeo::create_closed_cp_in_u(cpts, udegree);
 
@@ -2438,6 +2694,7 @@ impl SurfaceGeo{
         SurfaceGeo::new_with_knots(cpts, udegree, vdegree, uknots, vknots, 0.0, 1.0, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn new_v_closed(mut cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
         cpts = NurbsGeo::create_closed_cp_in_v(cpts, vdegree);
 
@@ -2449,53 +2706,63 @@ impl SurfaceGeo{
 
 
 
+    #[allow(dead_code)]
     pub fn udeg(&self)->u8{
         self.udegree
     }
 
+    #[allow(dead_code)]
     pub fn vdeg(&self)->u8{
         self.vdegree
     }
 
+    #[allow(dead_code)]
     pub fn unum(&self)->usize{
         self.cpts.len()
     }
 
+    #[allow(dead_code)]
     pub fn vnum(&self)->usize{
         self.cpts[0].len()
     }
 
+    #[allow(dead_code)]
     pub fn uep_num(&self)->usize{
         self.uknots.len() - 2*(self.udegree as usize)
     }
 
+    #[allow(dead_code)]
     pub fn vep_num(&self)->usize{
         self.vknots.len() - 2*(self.vdegree as usize)
     }
 
+    #[allow(dead_code)]
     pub fn cp(&self, i:usize, j:usize)->Vec3{
         self.cpts[i][j]
     }
 
-    pub fn u(&self, epIdx:usize, epFraction:f64)->f64{
-        if epFraction>=0.0{
-            return self.uknots[epIdx+self.udegree as usize] + (self.uknots[epIdx+self.udegree as usize+1] - self.uknots[epIdx+self.udegree as usize])*epFraction;
+    #[allow(dead_code)]
+    pub fn u(&self, ep_idx:usize, ep_frac:f64)->f64{
+        if ep_frac>=0.0{
+            return self.uknots[ep_idx+self.udegree as usize] + (self.uknots[ep_idx+self.udegree as usize+1] - self.uknots[ep_idx+self.udegree as usize])*ep_frac;
         }
-        return self.uknots[epIdx+self.udegree as usize] + (self.uknots[epIdx+self.udegree as usize] - self.uknots[epIdx+self.udegree as usize-1])*epFraction;
+        return self.uknots[ep_idx+self.udegree as usize] + (self.uknots[ep_idx+self.udegree as usize] - self.uknots[ep_idx+self.udegree as usize-1])*ep_frac;
     }
 
-    pub fn v(&self, epIdx:usize, epFraction:f64)->f64{
-        if epFraction>=0.0{
-            return self.vknots[epIdx+self.vdegree as usize] + (self.vknots[epIdx+self.vdegree as usize+1] - self.vknots[epIdx+self.vdegree as usize])*epFraction;
+    #[allow(dead_code)]
+    pub fn v(&self, ep_idx:usize, ep_frac:f64)->f64{
+        if ep_frac>=0.0{
+            return self.vknots[ep_idx+self.vdegree as usize] + (self.vknots[ep_idx+self.vdegree as usize+1] - self.vknots[ep_idx+self.vdegree as usize])*ep_frac;
         }
-        return self.vknots[epIdx+self.vdegree as usize] + (self.vknots[epIdx+self.vdegree as usize] - self.vknots[epIdx+self.vdegree as usize-1])*epFraction;
+        return self.vknots[ep_idx+self.vdegree as usize] + (self.vknots[ep_idx+self.vdegree as usize] - self.vknots[ep_idx+self.vdegree as usize-1])*ep_frac;
     }
 
+    #[allow(dead_code)]
     pub fn pt(&self, u:f64, v:f64)->Vec3{
-        let uindex = self.basisFunctionU.index(u);
-        let vindex = self.basisFunctionV.index(v);
-        let nu:Vec<f64> = self.basisFunctionU.eval_with_index(uindex, u);
-        let nv:Vec<f64> = self.basisFunctionV.eval_with_index(vindex, v);
+        let uindex = self.basis_function_u.index(u);
+        let vindex = self.basis_function_v.index(v);
+        let nu:Vec<f64> = self.basis_function_u.eval_with_index(uindex, u);
+        let nv:Vec<f64> = self.basis_function_v.eval_with_index(vindex, v);
         let mut weight:f64 = 0.0;
         let mut retval:Vec3 = Vec3::zero();
         for i in 0..=self.udegree as usize{
@@ -2514,12 +2781,13 @@ impl SurfaceGeo{
         retval
     }
 
+    #[allow(dead_code)]
     pub fn utan(&self, u:f64, v:f64)->Vec3{
-        let uindex = self.derivativeFunctionU.index(u);
-        let vindex = self.derivativeFunctionV.index(v);
-        let nu : Vec<f64> = self.basisFunctionU.eval_with_index(uindex, u);
-        let nv : Vec<f64> = self.basisFunctionV.eval_with_index(vindex, v);
-        let dnu : Vec<f64> = self.derivativeFunctionU.eval_with_index(uindex, u);
+        let uindex = self.derivative_function_u.index(u);
+        let vindex = self.derivative_function_v.index(v);
+        let nu : Vec<f64> = self.basis_function_u.eval_with_index(uindex, u);
+        let nv : Vec<f64> = self.basis_function_v.eval_with_index(vindex, v);
+        let dnu : Vec<f64> = self.derivative_function_u.eval_with_index(uindex, u);
         let mut val1: Vec3 = Vec3::zero();
         let mut val2: Vec3 = Vec3::zero();
         let mut weight1 : f64 = 0.0;
@@ -2552,12 +2820,13 @@ impl SurfaceGeo{
         Vec3::new((val2.x-val1.x)/weight1, (val2.y-val1.y)/weight1, (val2.z-val1.z)/weight1)
     }
 
+    #[allow(dead_code)]
     pub fn vtan(&self, u:f64, v:f64)->Vec3{
-        let uindex = self.derivativeFunctionU.index(u);
-        let vindex = self.derivativeFunctionV.index(v);
-        let nu : Vec<f64> = self.basisFunctionU.eval_with_index(uindex, u);
-        let nv : Vec<f64> = self.basisFunctionV.eval_with_index(vindex, v);
-        let dnv : Vec<f64> = self.derivativeFunctionV.eval_with_index(vindex, v);
+        let uindex = self.derivative_function_u.index(u);
+        let vindex = self.derivative_function_v.index(v);
+        let nu : Vec<f64> = self.basis_function_u.eval_with_index(uindex, u);
+        let nv : Vec<f64> = self.basis_function_v.eval_with_index(vindex, v);
+        let dnv : Vec<f64> = self.derivative_function_v.eval_with_index(vindex, v);
         let mut val1: Vec3 = Vec3::zero();
         let mut val2: Vec3 = Vec3::zero();
         let mut weight1 : f64 = 0.0;
@@ -2590,6 +2859,7 @@ impl SurfaceGeo{
         Vec3::new((val2.x-val1.x)/weight1, (val2.y-val1.y)/weight1, (val2.z-val1.z)/weight1)
     }
 
+    #[allow(dead_code)]
     pub fn nml(&self, u:f64, v:f64)->Vec3{
         let ut = self.utan(u,v);
         let vt = self.vtan(u,v);
@@ -2629,23 +2899,29 @@ pub struct Point/*<'a>*/{
 }
 
 impl Point{
+    #[allow(dead_code)]
     pub fn new(x:f64, y:f64, z:f64)->Self{
         Point{id:-1, pos:Vec3::new(x,y,z),attr:Attribute::default()}
     }
+    #[allow(dead_code)]
     pub fn new_with_vec3(pos:&Vec3)->Self{
         Point{id:-1, pos:Vec3::new_with_vec3(pos),attr:Attribute::default()}
     }
+    #[allow(dead_code)]
     pub fn set_id(&mut self, id:i32){
         self.id = id;
     }
+    #[allow(dead_code)]
     pub fn clr(&mut self, r:f32, g:f32, b:f32, a:f32)->&mut Point{
         self.attr.color.set_rgba(r,g,b,a);
         self
     }
+    #[allow(dead_code)]
     pub fn hsb(&mut self, h:f32, s:f32, b:f32, a:f32)->&mut Point{
         self.attr.color.set_hsb(h,s,b,a);
         self
     }
+    #[allow(dead_code)]
     pub fn set_attr(&mut self, attr:&Attribute)->&mut Point{
         self.attr.set(attr);
         self
@@ -2675,14 +2951,17 @@ pub struct PolynomialFunction{
     coeff:Vec<f64>
 }
 impl PolynomialFunction{
+    #[allow(dead_code)]
     pub fn new(degree:u8, coeff:Vec<f64>)->Self{
         PolynomialFunction{degree, coeff}
     }
 
+    #[allow(dead_code)]
     pub fn new_with_function(func: &PolynomialFunction)->Self{
         PolynomialFunction{degree:func.degree, coeff:func.coeff.clone()}
     }
 
+    #[allow(dead_code)]
     pub fn eval(&self, x:f64)->f64{
         let mut retval : f64 = self.coeff[0];
         for i in 1..((self.degree+1) as usize){
@@ -2691,6 +2970,7 @@ impl PolynomialFunction{
         retval
     }
 
+    #[allow(dead_code)]
     pub fn differentiate(&mut self){
         if self.degree==0{
             //return PolynomialFunction::new(0, Vec::from([0.0]));
@@ -2708,14 +2988,18 @@ impl PolynomialFunction{
         }
     }
 
+
+    #[allow(dead_code)]
     pub fn mul(&mut self, a:f64){
         for i in 0..(self.degree+1){
             self.coeff[i as usize] *= a;
         }
     }
+    #[allow(dead_code)]
     pub fn add(&mut self, p: &PolynomialFunction){
         if p.degree > self.degree{
             self.degree = p.degree;
+            #[allow(unused_variables)]
             for i in self.coeff.len()..p.coeff.len(){ //
                 self.coeff.push(0.0);
             }
@@ -2724,10 +3008,11 @@ impl PolynomialFunction{
             self.coeff[i] += p.coeff[i];
         }
     }
-
+    #[allow(dead_code)]
     pub fn mul_function(&mut self, p:&PolynomialFunction){
         let new_deg = self.degree+p.degree;
         let mut coeff:Vec<f64> = Vec::new();
+        #[allow(unused_variables)]
         for i in 0..(new_deg+1){ coeff.push(0.0); }
         for i in 0..(self.degree+1) as usize{
             for j in 0..(p.degree+1) as usize{
@@ -2738,6 +3023,7 @@ impl PolynomialFunction{
         self.coeff = coeff;
     }
 
+    #[allow(dead_code)]
     pub fn to_string(&self)->String{
         let mut txt = String::from("PolynomialFunction{ degree: ");
         txt += &self.degree.to_string();
@@ -2762,10 +3048,12 @@ pub struct PiecewiseFunction{
 
 
 impl PiecewiseFunction{
+    #[allow(dead_code)]
     pub fn new(domains:Vec<f64>, functions:Vec<PolynomialFunction>)->Self{
         PiecewiseFunction{domains, functions}
     }
 
+    #[allow(dead_code)]
     pub fn domain_index(&self, x:f64)->i32{
         if x < self.domains[0]{ return -1; }
         if x >= self.domains[self.domains.len()-1]{ return (self.domains.len()-1) as i32; }
@@ -2782,6 +3070,7 @@ impl PiecewiseFunction{
         mid as i32
     }
 
+    #[allow(dead_code)]
     pub fn eval(&self, x:f64)->f64{
         let idx = self.domain_index(x);
         self.functions[idx as usize].eval(x)
@@ -2798,6 +3087,7 @@ pub struct BSplineBasisFunction{
 }
 
 impl BSplineBasisFunction{
+    #[allow(dead_code)]
     pub fn new(degree:u8, knots:Vec<f64>)->Self{
         let mut func : Vec<Option<BSplineBasisSubFunction>> = Vec::new();
 
@@ -2813,6 +3103,7 @@ impl BSplineBasisFunction{
         }
     }
 
+    #[allow(dead_code)]
     pub fn index(&self, x:f64)->usize{
         let mut min = self.degree as usize;
         let mut max = self.knots.len() -1-self.degree as usize;
@@ -2834,16 +3125,18 @@ impl BSplineBasisFunction{
         return mid;
     }
 
+    #[allow(dead_code)]
     pub fn eval(&self, x:f64)->Vec<f64>{
         let index = self.index(x);
         self.eval_with_index(index, x)
     }
 
+    #[allow(dead_code)]
     pub fn eval_with_index(&self, index:usize, x:f64)->Vec<f64>{
         let mut val : Vec<f64> = Vec::new();
-        for i in 0..(self.degree+1) as usize{
-            if i+index-(self.degree as usize) >= 0 && i+index-(self.degree as usize)< self.functions.len(){
-                val.push( self.functions[i+index-(self.degree as usize)].as_ref().unwrap().functions[(self.degree as usize)-i+1].as_ref().unwrap().eval(x));
+        for i in 0..(self.degree+1) as i32{
+            if i+index as i32-(self.degree as i32) >= 0 && i+index as i32 -(self.degree as i32)< self.functions.len() as i32{
+                val.push( self.functions[i as usize +index-(self.degree as usize)].as_ref().unwrap().functions[(self.degree as usize)- i as usize + 1].as_ref().unwrap().eval(x));
             }
             else{
                 val.push(0.0);
@@ -2852,12 +3145,14 @@ impl BSplineBasisFunction{
         val
     }
 
+    #[allow(dead_code)]
     pub fn differentiate(&mut self){
         for i in 0..self.functions.len(){
             self.functions[i].as_mut().unwrap().differentiate();
         }
     }
 
+    #[allow(dead_code)]
     pub fn to_string(&self)->String{
         let mut txt = String::from("BSplineBasisFunction{ degree: ");
         txt += &self.degree.to_string();
@@ -2896,6 +3191,7 @@ pub struct BSplineBasisSubFunction{
 }
 
 impl BSplineBasisSubFunction{
+    #[allow(dead_code)]
     pub fn new(degree:u8, index:i32, knots:Vec<f64>)->Self{
 
 //        web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}", degree, index, knots.len())));
@@ -2958,6 +3254,7 @@ impl BSplineBasisSubFunction{
             knots:bs1.knots }*/
     }
 
+    #[allow(dead_code)]
     pub fn new_with_function(f:&BSplineBasisSubFunction)->Self{
         let mut func : Vec<Option<PolynomialFunction>> = Vec::new();
         for i in 0..f.functions.len(){
@@ -2971,6 +3268,7 @@ impl BSplineBasisSubFunction{
             knots:f.knots.clone() }
     }
 
+    #[allow(dead_code)]
     pub fn add(&mut self, bs: &BSplineBasisSubFunction){
         if self.index > bs.index{
             let (new_domains, new_functions) = BSplineBasisSubFunction::add_domain_and_function(self.degree, bs, self);
@@ -2984,11 +3282,12 @@ impl BSplineBasisSubFunction{
         }
     }
 
+    #[allow(dead_code)]
     pub fn add_domain_and_function(degree: u8, bs1: &BSplineBasisSubFunction, bs2: &BSplineBasisSubFunction)->(Vec<f64>, Vec<Option<PolynomialFunction>>){
 
         let mut new_dom:Vec<f64> = Vec::new();
-        let bs1deg = bs1.degree as i32;
-        let bs2deg = bs2.degree as i32;
+        //let bs1deg = bs1.degree as i32;
+        //let bs2deg = bs2.degree as i32;
         let bs1domlen = bs1.domains.len() as i32;
         let bs2domlen = bs2.domains.len() as i32;
 
@@ -3033,11 +3332,13 @@ impl BSplineBasisSubFunction{
         }
         */
 
-        //for i in 0..(bs1deg + 2 + bs2.index-bs1.index) {
+        #[allow(unused_variables)]
         for i in 0..(degree as i32 + 2 + bs2.index-bs1.index) {
             new_dom.push(0.0);
         }
         let mut new_func:Vec<Option<PolynomialFunction>> = Vec::new();
+
+        #[allow(unused_variables)]
         for i in 0..(degree as i32 + 3 + bs2.index-bs1.index){
             new_func.push(None);
         }
@@ -3113,6 +3414,7 @@ impl BSplineBasisSubFunction{
     }
 
 
+    #[allow(dead_code)]
     pub fn mul(&mut self, p:&PolynomialFunction){
         for i in 0..self.functions.len(){
             if !self.functions[i].is_none(){
@@ -3122,6 +3424,7 @@ impl BSplineBasisSubFunction{
         }
     }
 
+    #[allow(dead_code)]
     pub fn differentiate(&mut self){
         for i in 0..self.functions.len(){
             if !self.functions[i].is_none(){
@@ -3130,7 +3433,7 @@ impl BSplineBasisSubFunction{
         }
     }
 
-
+    #[allow(dead_code)]
     pub fn to_string(&self)->String{
         let mut txt = String::from("BSplineBasisSubFunction{ degree: ");
         txt += &self.degree.to_string();
@@ -3191,23 +3494,28 @@ impl Vec3{
         Vec3{ x:0.0, y:0.0, z:0.0 }
     }
     */
+    #[allow(dead_code)]
     pub fn new(x:f64, y:f64, z:f64) -> Self{
         Vec3{ x, y, z }
     }
 
+    #[allow(dead_code)]
     pub fn zero() -> Self{
         Vec3{ x:0.0, y:0.0, z:0.0 }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_vec3(v:&Vec3) -> Self{
         //Vec3{ x:v.x, y:v.y, z:v.z }
         Vec3{ ..*v }
     }
 
+    #[allow(dead_code)]
     pub fn clone(&self) ->Self{
         Vec3::new_with_vec3(self)
     }
 
+    #[allow(dead_code)]
     pub fn set(&mut self, v:&Vec3)->&mut Self{
         self.x = v.x;
         self.y = v.y;
@@ -3215,14 +3523,17 @@ impl Vec3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn to_array(&self)->[f64;3]{
         [self.x,self.y,self.z]
     }
 
+    #[allow(dead_code)]
     pub fn to_array32(&self)->[f32;3]{
         [self.x as f32,self.y as f32,self.z as f32]
     }
 
+    #[allow(dead_code)]
     pub fn add(&mut self, v:&Vec3)->&mut Self{
         self.x += v.x;
         self.y += v.y;
@@ -3232,6 +3543,7 @@ impl Vec3{
 
 
 
+    #[allow(dead_code)]
     pub fn sub(&mut self, v:&Vec3)->&mut Self{
         self.x -= v.x;
         self.y -= v.y;
@@ -3239,6 +3551,7 @@ impl Vec3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn mul(&mut self, f:f64)->&mut Self{
         self.x *= f;
         self.y *= f;
@@ -3246,6 +3559,7 @@ impl Vec3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn div(&mut self, f:f64)->&mut Self{
         self.x /= f;
         self.y /= f;
@@ -3253,6 +3567,7 @@ impl Vec3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn neg(&mut self)->&mut Self{
         self.x = -self.x;
         self.y = -self.y;
@@ -3260,14 +3575,17 @@ impl Vec3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn dot(&self, v:&Vec3)->f64{
         self.x * v.x + self.y * v.y + self.z * v.z
     }
 
+    #[allow(dead_code)]
     pub fn cross(&self, v:&Vec3)->Self{
         Vec3{x: self.y*v.z-self.z*v.y, y:self.z*v.x-self.x*v.z, z:self.x*v.y-self.y*v.x}
     }
 
+    #[allow(dead_code)]
     pub fn icross(&mut self, v:&Vec3)->&mut Self{
         let x = self.y*v.z - self.z*v.y;
         let y = self.z*v.x-self.x*v.z;
@@ -3278,16 +3596,20 @@ impl Vec3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn len2(&self) -> f64{
         self.x*self.x + self.y*self.y + self.z*self.z
     }
+    #[allow(dead_code)]
     pub fn len(&self)->f64{
         self.len2().sqrt()
     }
 
+    #[allow(dead_code)]
     pub fn set_len(&mut self, len:f64) ->&mut Self{
         self.mul(len/self.len())
     }
+    #[allow(dead_code)]
     pub fn unit(&mut self) ->&mut Self{
         let l = self.len();
         self.x /= l;
@@ -3296,26 +3618,33 @@ impl Vec3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn dist2(&self, v:&Vec3)->f64{
         (self.x-v.x)*(self.x-v.x) + (self.y-v.y)*(self.y-v.y) + (self.z-v.z)*(self.z-v.z)
     }
+    #[allow(dead_code)]
     pub fn dist(&self, v:&Vec3)->f64{
         self.dist2(v).sqrt()
     }
 
+    #[allow(dead_code)]
     pub fn eq(&self, v:&Vec3)->bool{
         self.dist2(v) <= TOLERANCE*TOLERANCE
     }
+    #[allow(dead_code)]
     pub fn eq_x(&self, v:&Vec3)->bool{
         (self.x-v.x).abs() <= TOLERANCE
     }
+    #[allow(dead_code)]
     pub fn eq_y(&self, v:&Vec3)->bool{
         (self.y-v.y).abs() <= TOLERANCE
     }
+    #[allow(dead_code)]
     pub fn eq_z(&self, v:&Vec3)->bool{
         (self.z-v.z).abs() <= TOLERANCE
     }
 
+    #[allow(dead_code)]
     pub fn angle(&self, v:&Vec3)->f64{
         let len1 = self.len();
         if len1==0.0 { return 0.0; }
@@ -3326,6 +3655,7 @@ impl Vec3{
         cos.acos()
     }
 
+    #[allow(dead_code)]
     pub fn angle_with_axis(&self, v:&Vec3, axis:&Vec3)->f64{
         let ang = self.angle(v);
         let crs = self.cross(v);
@@ -3333,6 +3663,7 @@ impl Vec3{
         ang
     }
 
+    #[allow(dead_code)]
     pub fn rot(&mut self, axis:&Vec3, angle:f64)->&mut Self{
         //null check of axis needed?
         let mut ax = axis.clone();
@@ -3360,16 +3691,19 @@ impl Vec3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn rot_with_center(&mut self, center:&Vec3, axis:&Vec3, angle:f64)->&mut Self{
         self.sub(center);
         self.rot(axis,angle);
         self.add(center)
     }
 
+    #[allow(dead_code)]
     pub fn rot2(&mut self, angle:f64)->&mut Self{
         self.rot(&Vec3::new(0.,0.,1.), angle)
     }
 
+    #[allow(dead_code)]
     pub fn rot2_with_center(&mut self, center:&Vec3, angle:f64)->&mut Self{
         self.sub(center);
         self.rot2(angle);
@@ -3377,28 +3711,31 @@ impl Vec3{
     }
 
 
+    #[allow(dead_code)]
     pub fn scale(&mut self, center:&Vec3, factor:f64) ->&mut Self{
         self.sub(center);
         self.mul(factor);
         self.add(center)
     }
 
+    #[allow(dead_code)]
     pub fn scale1d(&mut self, axis:&Vec3, factor:f64) ->&mut Self{
         let d = self.dot(axis)/axis.len2()*(factor-1.0);
-        self.scaleAdd(d, axis)
+        self.scale_add(d, axis)
     }
 
-    pub fn scaleAdd(&mut self, factor:f64, v:&Vec3)->&mut Self{
+    #[allow(dead_code)]
+    pub fn scale_add(&mut self, factor:f64, v:&Vec3)->&mut Self{
         self.x += v.x*factor;
         self.y += v.y*factor;
         self.z += v.z*factor;
         self
     }
-
-    pub fn mirror(&mut self, planeDir:&Vec3)->&mut Self{
-        self.scaleAdd(self.dot(planeDir)/planeDir.len2()*-2.0, planeDir)
+    #[allow(dead_code)]
+    pub fn mirror(&mut self, plane_dir:&Vec3)->&mut Self{
+        self.scale_add(self.dot(plane_dir)/plane_dir.len2()*-2.0, plane_dir)
     }
-
+    #[allow(dead_code)]
     pub fn transform(&mut self, xvec:&Vec3, yvec:&Vec3, zvec:&Vec3) ->&mut Self{
         let tx = xvec.x*self.x + yvec.x*self.y + zvec.x*self.z;
         let ty = xvec.y*self.x + yvec.y*self.y + zvec.y*self.z;
@@ -3409,43 +3746,50 @@ impl Vec3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn transform_with_translate(&mut self, xvec:&Vec3, yvec:&Vec3, zvec:&Vec3, translate:&Vec3) ->&mut Self{
         self.transform(xvec,yvec,zvec);
         self.add(translate)
     }
 
 
+    #[allow(dead_code)]
     pub fn cp(&self, v:&Vec3)->Self{
         Vec3{x:self.x+v.x, y:self.y+v.y, z:self.z+v.z}
     }
 
+    #[allow(dead_code)]
     pub fn dif(&self, v:&Vec3)->Self{
         Vec3{x:self.x-v.x, y:self.y-v.y, z:self.z-v.z}
     }
 
+    #[allow(dead_code)]
     pub fn sum(&self, v:&Vec3)->Self{
         Vec3{x:self.x+v.x, y:self.y+v.y, z:self.z+v.z}
     }
 
+    #[allow(dead_code)]
     pub fn mid(&self, v:&Vec3)->Self{
         Vec3{x:(self.x+v.x)/2.0, y:(self.y+v.y)/2.0, z:(self.z+v.z)/2.0}
     }
 
 
+    #[allow(dead_code)]
     pub fn bisect(&self, v:&Vec3)->Self{
         let l1 = self.len();
         let l2 = v.len();
         Vec3{x:self.x/l1+v.x/l2, y:self.y/l1+v.y/l2, z:self.z/l1+v.z/l2}
     }
 
-    pub fn intersect(line1Pt1:&Vec3, line1Pt2:&Vec3, line2Pt1:&Vec3, line2Pt2:&Vec3)->Option<Vec3>{
-        if line1Pt1.eq(line2Pt1) || line1Pt1.eq(line2Pt2) { return Some(line1Pt1.clone()); }
-        if line1Pt2.eq(line2Pt1) || line1Pt2.eq(line2Pt2) { return Some(line1Pt2.clone()); }
+    #[allow(dead_code)]
+    pub fn intersect(line1pt1:&Vec3, line1pt2:&Vec3, line2pt1:&Vec3, line2pt2:&Vec3)->Option<Vec3>{
+        if line1pt1.eq(line2pt1) || line1pt1.eq(line2pt2) { return Some(line1pt1.clone()); }
+        if line1pt2.eq(line2pt1) || line1pt2.eq(line2pt2) { return Some(line1pt2.clone()); }
 
-        let mut dir1 = line1Pt2.dif(line1Pt1);
-        let mut dir2 = line2Pt2.dif(line2Pt1);
+        let mut dir1 = line1pt2.dif(line1pt1);
+        let mut dir2 = line2pt2.dif(line2pt1);
 
-        let mut dif = line2Pt1.dif(line1Pt1);
+        let mut dif = line2pt1.dif(line1pt1);
 
         let mut op = dir1.cross(&dir2);
         let oplen = op.len();
@@ -3453,7 +3797,7 @@ impl Vec3{
         if oplen < TOLERANCE*TOLERANCE {
             dir1.unit();
             if dir1.mul(dif.dot(&dir1)).sub(&dif).len() > TOLERANCE{ return None; }
-            return Some(line1Pt1.clone());
+            return Some(line1pt1.clone());
         }
 
         op.div(oplen);
@@ -3470,26 +3814,27 @@ impl Vec3{
         if iip122==0.0 { return None; }
         let ip1 = dif.dot(&dir1);
         let ip2 = dif.dot(&dir2);
-        let ret = dir1.mul((ip1-ip2*ip12)/iip122).add(line1Pt1);
+        let ret = dir1.mul((ip1-ip2*ip12)/iip122).add(line1pt1);
         return Some(*ret);
     }
 
-    pub fn intersect_segment(line1Pt1:&Vec3, line1Pt2:&Vec3, line2Pt1:&Vec3, line2Pt2:&Vec3)->Option<Vec3>{
-        if line1Pt1.eq(line2Pt1) || line1Pt1.eq(line2Pt2){ Some(line1Pt1.clone()); }
-        if line1Pt2.eq(line2Pt1) || line1Pt2.eq(line2Pt2){ Some(line1Pt2.clone()); }
+    #[allow(dead_code)]
+    pub fn intersect_segment(line1pt1:&Vec3, line1pt2:&Vec3, line2pt1:&Vec3, line2pt2:&Vec3)->Option<Vec3>{
+        if line1pt1.eq(line2pt1) || line1pt1.eq(line2pt2){ Some(line1pt1.clone()); }
+        if line1pt2.eq(line2pt1) || line1pt2.eq(line2pt2){ Some(line1pt2.clone()); }
 
-        let min1x = line1Pt1.x.min(line1Pt2.x);
-        let min1y = line1Pt1.y.min(line1Pt2.y);
-        let min1z = line1Pt1.z.min(line1Pt2.z);
-        let max1x = line1Pt1.x.max(line1Pt2.x);
-        let max1y = line1Pt1.y.max(line1Pt2.y);
-        let max1z = line1Pt1.z.max(line1Pt2.z);
-        let min2x = line2Pt1.x.min(line2Pt2.x);
-        let min2y = line2Pt1.y.min(line2Pt2.y);
-        let min2z = line2Pt1.z.min(line2Pt2.z);
-        let max2x = line2Pt1.x.max(line2Pt2.x);
-        let max2y = line2Pt1.y.max(line2Pt2.y);
-        let max2z = line2Pt1.z.max(line2Pt2.z);
+        let min1x = line1pt1.x.min(line1pt2.x);
+        let min1y = line1pt1.y.min(line1pt2.y);
+        let min1z = line1pt1.z.min(line1pt2.z);
+        let max1x = line1pt1.x.max(line1pt2.x);
+        let max1y = line1pt1.y.max(line1pt2.y);
+        let max1z = line1pt1.z.max(line1pt2.z);
+        let min2x = line2pt1.x.min(line2pt2.x);
+        let min2y = line2pt1.y.min(line2pt2.y);
+        let min2z = line2pt1.z.min(line2pt2.z);
+        let max2x = line2pt1.x.max(line2pt2.x);
+        let max2y = line2pt1.y.max(line2pt2.y);
+        let max2z = line2pt1.z.max(line2pt2.z);
 
         // check bounding region
          if min1x > max2x + TOLERANCE || max1x < min2x - TOLERANCE ||
@@ -3497,15 +3842,15 @@ impl Vec3{
             min1z > max2z + TOLERANCE || max1z < min2z - TOLERANCE { return None; }
 
          // judging by tolerance
-         if line1Pt1.eq(&line2Pt1) { return Some(line1Pt1.clone()); }
-         if line1Pt1.eq(&line2Pt2) { return Some(line1Pt1.clone()); }
-         if line1Pt2.eq(&line2Pt1) { return Some(line1Pt2.clone()); }
-         if line1Pt2.eq(&line2Pt2) { return Some(line1Pt2.clone()); }
+         if line1pt1.eq(&line2pt1) { return Some(line1pt1.clone()); }
+         if line1pt1.eq(&line2pt2) { return Some(line1pt1.clone()); }
+         if line1pt2.eq(&line2pt1) { return Some(line1pt2.clone()); }
+         if line1pt2.eq(&line2pt2) { return Some(line1pt2.clone()); }
 
-         let mut dir1 = line1Pt2.dif(&line1Pt1);
-         let mut dir2 = line2Pt2.dif(&line2Pt1);
+         let mut dir1 = line1pt2.dif(&line1pt1);
+         let mut dir2 = line2pt2.dif(&line2pt1);
 
-         let mut dif = line2Pt1.dif(&line1Pt1);
+         let mut dif = line2pt1.dif(&line1pt1);
 
          // optimizing by inlining & reuse variables in projectTo2Vec
 
@@ -3520,17 +3865,17 @@ impl Vec3{
              }
 
              // now parallel and close but overwapping?
-             let dif12 = line2Pt2.dif(&line1Pt1);
-             let dif21 = line2Pt1.dif(&line1Pt2);
+             let dif12 = line2pt2.dif(&line1pt1);
+             let dif21 = line2pt1.dif(&line1pt2);
              let ip11 = dir1.dot(&dif);
              let ip12 = dir1.dot(&dif12);
 
              if  ip11 <= TOLERANCE && ip12 >= -TOLERANCE ||
-                 ip11 >= -TOLERANCE && ip12 <= TOLERANCE { return Some(line1Pt1.clone()); }
+                 ip11 >= -TOLERANCE && ip12 <= TOLERANCE { return Some(line1pt1.clone()); }
 
              let ip21 = dir1.dot(&dif21);
              if ip11 >= -TOLERANCE && ip21 <= TOLERANCE ||
-                ip11 <= TOLERANCE && ip21 >= -TOLERANCE { return Some(line2Pt1.clone()); }
+                ip11 <= TOLERANCE && ip21 >= -TOLERANCE { return Some(line2pt1.clone()); }
 
              return None; // no overlap
          }
@@ -3559,30 +3904,36 @@ impl Vec3{
          let ilen2 = (ip2-ip1*ip12)/iip122;
          if -ilen2 < -TOLERANCE || -ilen2 > len2+TOLERANCE { return None; } // out of segment 2
 
-         let ret = dir1.mul(ilen1).add(&line1Pt1);
+         let ret = dir1.mul(ilen1).add(&line1pt1);
          return Some(*ret);
     }
 
 
+    #[allow(dead_code)]
     pub fn dist_to_plane(&self, plane_dir:&Vec3, plane_pt:&Vec3)->f64{
         let plen = plane_dir.len();
         if plen==0.0 { return self.dist(plane_pt); }
         (self.dif(plane_pt).dot(plane_dir)/plen).abs()
     }
+    #[allow(dead_code)]
     pub fn nml(&self, pt1:&Vec3, pt2:&Vec3)->Vec3{
         self.dif(pt1).cross(&self.dif(pt2))
     }
+    #[allow(dead_code)]
     pub fn is_on_plane(&self, pt1:&Vec3, pt2:&Vec3, pt3:&Vec3)->bool{
         self.is_on_plane_with_nml(&Vec3::get_normal(pt1,pt2,pt3), pt1)
     }
+    #[allow(dead_code)]
     pub fn is_on_plane_with_nml(&self, plane_dir:&Vec3, plane_pt:&Vec3)->bool{
         self.dist_to_plane(plane_dir, plane_pt) < TOLERANCE
     }
 
+    #[allow(dead_code)]
     pub fn is_flat(pt1:&Vec3, pt2:&Vec3, pt3:&Vec3, pt4:&Vec3)->bool{
         pt1.is_on_plane(pt2,pt3,pt4)
     }
 
+    #[allow(dead_code)]
     pub fn get_normal(pt1:&Vec3, pt2:&Vec3, pt3:&Vec3)->Vec3{
         pt1.nml(pt2,pt3)
     }
@@ -3599,6 +3950,7 @@ pub struct Vec4{
 
 pub struct Matrix{}
 impl Matrix{
+    #[allow(dead_code)]
     pub fn det(v11:f64, v12:f64, v21:f64, v22:f64)->f64{
         v11*v22-v12*v21
     }
@@ -3609,10 +3961,12 @@ pub struct Matrix3{
 }
 
 impl Matrix3{
+    #[allow(dead_code)]
     pub fn new(v11:f64, v12:f64, v13:f64, v21:f64,v22:f64, v23:f64, v31:f64,v32:f64, v33:f64 )->Self{
         Matrix3{val:[[v11,v12,v13],[v21,v22,v23],[v31,v32,v33]]  }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_matrix3(m:&Matrix3)->Self{
         Matrix3{
             val:[
@@ -3622,18 +3976,21 @@ impl Matrix3{
             ]}
     }
 
+    #[allow(dead_code)]
     pub fn zero()->Self{
         Matrix3{
             val:[[0.0,0.0,0.0], [0.0,0.0,0.0], [0.0,0.0,0.0]]
         }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_id()->Self{
         Matrix3{
             val:[[1.0,0.0,0.0], [0.0,1.0,0.0], [0.0,0.0,1.0]]
         }
     }
 
+    #[allow(dead_code)]
     pub fn set(&mut self, v11:f64, v12:f64, v13:f64, v21:f64,v22:f64, v23:f64, v31:f64,v32:f64, v33:f64 )->&mut Self{
         self.val[0][0] = v11; self.val[0][1] = v12; self.val[0][2] = v13;
         self.val[1][0] = v21; self.val[1][1] = v22; self.val[1][2] = v23;
@@ -3641,24 +3998,28 @@ impl Matrix3{
         self
     }
 
+    #[allow(dead_code)]
     pub fn to_array(&self)->[f64;9]{
         [self.val[0][0],self.val[0][1],self.val[0][2],
         self.val[1][0],self.val[1][1],self.val[1][2],
         self.val[2][0],self.val[2][1],self.val[2][2]]
     }
 
+    #[allow(dead_code)]
     pub fn to_array32(&self)->[f32;9]{
         [self.val[0][0] as f32,self.val[0][1] as f32,self.val[0][2] as f32,
         self.val[1][0] as f32,self.val[1][1] as f32,self.val[1][2] as f32,
         self.val[2][0] as f32,self.val[2][1] as f32,self.val[2][2] as f32]
     }
 
+    #[allow(dead_code)]
     pub fn determinant(&self)->f64{
         self.val[0][0]*Matrix::det(self.val[1][1],self.val[1][2],self.val[2][1],self.val[2][2])+
         self.val[0][1]*Matrix::det(self.val[1][2],self.val[1][0],self.val[2][2],self.val[2][0])+
         self.val[0][2]*Matrix::det(self.val[1][0],self.val[1][1],self.val[2][0],self.val[2][1])
     }
 
+    #[allow(dead_code)]
     pub fn invert(&mut self)->&mut Self{
         let det = self.determinant();
         self.set(
@@ -3674,9 +4035,11 @@ impl Matrix3{
             self.val[0][1]*self.val[2][0] - self.val[0][0]*self.val[2][1],
             self.val[0][0]*self.val[1][1] - self.val[0][1]*self.val[1][0]
         );
+        self.div(det);
         self
     }
 
+    #[allow(dead_code)]
     pub fn matmul(&mut self, m:&Matrix3)->&mut Self{
         for i in 0..3{
             let (mut v1, mut v2, mut v3) = (0.0, 0.0, 0.0);
@@ -3693,6 +4056,7 @@ impl Matrix3{
     }
 
 
+    #[allow(dead_code)]
     pub fn vecmul(&self, v:&Vec3)->Vec3{
         Vec3{
             x:self.val[0][0]*v.x + self.val[0][1]*v.y + self.val[0][2]*v.z,
@@ -3701,41 +4065,49 @@ impl Matrix3{
         }
     }
 
+    #[allow(dead_code)]
     pub fn mul(&mut self, factor:f64)->&mut Self{
         for i in 0..3{ for j in 0..3{ self.val[i][j] *= factor; } }
         self
     }
 
+    #[allow(dead_code)]
     pub fn div(&mut self, factor:f64)->&mut Self{
         for i in 0..3{ for j in 0..3{ self.val[i][j] /= factor; } }
         self
     }
 
+    #[allow(dead_code)]
     pub fn set_zero(&mut self)->&mut Self{
         for i in 0..3{ for j in 0..3{ self.val[i][j] = 0.0; } }
         self
     }
 
+    #[allow(dead_code)]
     pub fn id(&mut self)->&mut Self{
         for i in 0..3{ for j in 0..3{ self.val[i][j] = if i==j {1.0 } else{ 0.0 } } }
         self
     }
 
+    #[allow(dead_code)]
     pub fn x_rotation(angle:f64)->Self{
         Matrix3::new(1.0, 0.0, 0.0,
             0.0, angle.cos(), -angle.sin(),
             0.0, angle.sin(), angle.cos())
     }
+    #[allow(dead_code)]
     pub fn y_rotation(angle:f64)->Self{
         Matrix3::new(angle.cos(), 0.0, angle.sin(),
             0.0, 1.0, 0.0,
             -angle.sin(), 0.0, angle.cos())
     }
+    #[allow(dead_code)]
     pub fn z_rotation(angle:f64)->Self{
         Matrix3::new(angle.cos(), -angle.sin(), 0.0,
             angle.sin(), angle.cos(), 0.0,
             0.0, 0.0, 1.0)
     }
+    #[allow(dead_code)]
     pub fn rotation(axis:&Vec3, angle:f64)->Self{
         let mut a = axis.clone();
         a.unit();
@@ -3746,6 +4118,7 @@ impl Matrix3{
             a.x*a.y*ic+a.z*s, a.y*a.y*ic+c, a.y*a.z*ic-a.x*s,
             a.x*a.z*ic-a.y*s, a.y*a.z*ic+a.x*s, a.z*a.z*ic+c)
     }
+    #[allow(dead_code)]
     pub fn translate(p:&Vec3)->Self{
         Matrix3::new(1.0, 0.0, p.x,
             0.0, 1.0, p.y,
@@ -3754,6 +4127,7 @@ impl Matrix3{
 }
 
 impl fmt::Display for Vec3{
+    #[allow(dead_code)]
     fn fmt(&self, f:&mut fmt::Formatter)->fmt::Result{
         write!(f, "({},{},{})", self.x, self.y, self.z)
     }
@@ -3766,10 +4140,12 @@ pub struct Matrix4{
 }
 
 impl Matrix4{
+    #[allow(dead_code)]
     pub fn new(v11:f64,v12:f64,v13:f64,v14:f64, v21:f64,v22:f64, v23:f64,v24:f64, v31:f64,v32:f64, v33:f64,v34:f64, v41:f64, v42:f64, v43:f64, v44:f64 )->Self{
         Matrix4{val:[[v11,v12,v13,v14],[v21,v22,v23,v24],[v31,v32,v33,v34],[v41,v42,v43,v44]]  }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_matrix4(m:&Matrix4)->Self{
         Matrix4{
             val:[
@@ -3780,18 +4156,21 @@ impl Matrix4{
             ]}
     }
 
+    #[allow(dead_code)]
     pub fn zero()->Self{
         Matrix4{
             val:[[0.0,0.0,0.0,0.0], [0.0,0.0,0.0,0.0], [0.0,0.0,0.0,0.0], [0.0,0.0,0.0,0.0]]
         }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_id()->Self{
         Matrix4{
             val:[[1.0,0.0,0.0,0.0], [0.0,1.0,0.0,0.0], [0.0,0.0,1.0,0.0], [0.0,0.0,0.0,1.0]]
         }
     }
 
+    #[allow(dead_code)]
     pub fn set(&mut self,
         v11:f64, v12:f64, v13:f64, v14:f64,
         v21:f64, v22:f64, v23:f64, v24:f64,
@@ -3805,6 +4184,7 @@ impl Matrix4{
         self
     }
 
+    #[allow(dead_code)]
     pub fn set_with_matrix4(&mut self, m:&Matrix4)->&mut Self{
         self.val[0][0] = m.val[0][0]; self.val[0][1] = m.val[0][1]; self.val[0][2] = m.val[0][2]; self.val[0][3] = m.val[0][3];
         self.val[1][0] = m.val[1][0]; self.val[1][1] = m.val[1][1]; self.val[1][2] = m.val[1][2]; self.val[1][3] = m.val[1][3];
@@ -3813,6 +4193,7 @@ impl Matrix4{
         self
     }
 
+    #[allow(dead_code)]
     pub fn to_array(&self)->[f64;16]{
         [self.val[0][0],self.val[0][1],self.val[0][2],self.val[0][3],
         self.val[1][0],self.val[1][1],self.val[1][2],self.val[1][3],
@@ -3820,6 +4201,7 @@ impl Matrix4{
         self.val[3][0],self.val[3][1],self.val[3][2],self.val[3][3]]
     }
 
+    #[allow(dead_code)]
     pub fn to_array32(&self)->[f32;16]{
         [self.val[0][0] as f32,self.val[0][1] as f32,self.val[0][2] as f32,self.val[0][3] as f32,
         self.val[1][0] as f32,self.val[1][1] as f32,self.val[1][2] as f32,self.val[1][3] as f32,
@@ -3827,6 +4209,7 @@ impl Matrix4{
         self.val[3][0] as f32,self.val[3][1] as f32,self.val[3][2] as f32,self.val[3][3] as f32]
     }
 
+    #[allow(dead_code)]
     pub fn determinant(&self)->f64{
         Matrix::det(self.val[0][0],self.val[0][1],self.val[1][0],self.val[1][1])*
         Matrix::det(self.val[2][2],self.val[2][3],self.val[3][2],self.val[3][3]) +
@@ -3842,6 +4225,7 @@ impl Matrix4{
         Matrix::det(self.val[2][0],self.val[2][1],self.val[3][0],self.val[3][1])
     }
 
+    #[allow(dead_code)]
     pub fn invert(&mut self)->&mut Self{
         let det = self.determinant();
 
@@ -3918,6 +4302,7 @@ impl Matrix4{
         self
     }
 
+    #[allow(dead_code)]
     pub fn transpose(&mut self)->&mut Self{
         self.set(
             self.val[0][0],  self.val[1][0], self.val[2][0], self.val[3][0],
@@ -3928,6 +4313,7 @@ impl Matrix4{
         self
     }
 
+    #[allow(dead_code)]
     pub fn matmul(&mut self, m:&Matrix4)->&mut Self{
         for i in 0..4{
             let (mut v1, mut v2, mut v3, mut v4) = (0.0, 0.0, 0.0, 0.0);
@@ -3946,6 +4332,7 @@ impl Matrix4{
     }
 
 
+    #[allow(dead_code)]
     pub fn vecmul(&self, v:&Vec4)->Vec4{
         Vec4{
             x:self.val[0][0]*v.x + self.val[0][1]*v.y + self.val[0][2]*v.z + self.val[0][3]*v.w,
@@ -3955,26 +4342,31 @@ impl Matrix4{
         }
     }
 
+    #[allow(dead_code)]
     pub fn mul(&mut self, factor:f64)->&mut Self{
         for i in 0..4{ for j in 0..4{ self.val[i][j] *= factor; } }
         self
     }
 
+    #[allow(dead_code)]
     pub fn div(&mut self, factor:f64)->&mut Self{
         for i in 0..4{ for j in 0..4{ self.val[i][j] /= factor; } }
         self
     }
 
+    #[allow(dead_code)]
     pub fn set_zero(&mut self)->&mut Self{
         for i in 0..4{ for j in 0..4{ self.val[i][j] = 0.0; } }
         self
     }
 
+    #[allow(dead_code)]
     pub fn id(&mut self)->&mut Self{
         for i in 0..4{ for j in 0..4{ self.val[i][j] = if i==j {1.0 } else{ 0.0 } } }
         self
     }
 
+    #[allow(dead_code)]
     pub fn x_rotation(angle:f64)->Self{
         Matrix4::new(1.0, 0.0, 0.0, 0.0,
             0.0, angle.cos(), -angle.sin(), 0.0,
@@ -3982,6 +4374,7 @@ impl Matrix4{
             0.0, 0.0, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn y_rotation(angle:f64)->Self{
         Matrix4::new(angle.cos(), 0.0, angle.sin(), 0.0,
             0.0, 1.0, 0.0, 0.0,
@@ -3989,6 +4382,7 @@ impl Matrix4{
             0.0, 0.0, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn z_rotation(angle:f64)->Self{
         Matrix4::new(angle.cos(), -angle.sin(), 0.0, 0.0,
             angle.sin(), angle.cos(), 0.0, 0.0,
@@ -3996,6 +4390,7 @@ impl Matrix4{
             0.0, 0.0, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn rotation(axis:&Vec3, angle:f64)->Self{
         let mut a = axis.clone();
         a.unit();
@@ -4007,6 +4402,7 @@ impl Matrix4{
             a.x*a.z*ic-a.y*s, a.y*a.z*ic+a.x*s, a.z*a.z*ic+c, 0.0,
             0.0, 0.0, 0.0, 0.0)
     }
+    #[allow(dead_code)]
     pub fn translate(p:&Vec3)->Self{
         Matrix4::new(1.0, 0.0, 0.0, p.x,
             0.0, 1.0, 0.0, p.y,
@@ -4014,6 +4410,7 @@ impl Matrix4{
             0.0, 0.0, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn perspective(aspect:f64, fovy:f64, near:f64, far:f64)->Self{
         let f:f64 = 1.0/((fovy/2.0).tan());
         Matrix4::new(
@@ -4023,6 +4420,7 @@ impl Matrix4{
             0.0, 0.0, -far*near/(far-near), 0.0)
     }
 
+    #[allow(dead_code)]
     pub fn look_at(from: &Vec3, to: &Vec3, up: &Vec3)->Self{
         let mut front = from.dif(to);
         front.unit().unit();
@@ -4043,6 +4441,7 @@ impl Matrix4{
         )
     }
 
+    #[allow(dead_code)]
     pub fn scale(f:f64)->Self{
         Matrix4::new(f, 0.0, 0.0, 0.0,
             0.0, f, 0.0, 0.0,
@@ -4050,6 +4449,7 @@ impl Matrix4{
             0.0, 0.0, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn transform(xvector:&Vec3, yvector:&Vec3, zvector:&Vec3, translate:&Vec3)->Self{
         Matrix4::new(xvector.x, yvector.x, zvector.x, translate.x,
             xvector.y, yvector.y, zvector.y, translate.y,
@@ -4057,6 +4457,7 @@ impl Matrix4{
             0.0, 0.0, 0.0, 1.0)
     }
 
+    #[allow(dead_code)]
     pub fn convert(xvec1:&Vec3, yvec1:&Vec3, zvec1:&Vec3, orig1:&Vec3,
         xvec2:&Vec3, yvec2:&Vec3, zvec2:&Vec3, orig2:&Vec3)->Self{
             let mut mat1 = Matrix4::transform(xvec1,yvec1,zvec1,orig1);

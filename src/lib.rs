@@ -1,12 +1,13 @@
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::*;
 use web_sys::console::log_1;
-use rand::prelude::*;
+use std::f64::consts::PI;
 mod ig;
 
 
 // agent type 1
 impl ig::Agent{
+    #[allow(unused_variables)]
     fn interact(&mut self, agents:&Vec<Box<ig::Agent>>, manager:&mut ig::DataManager){
     }
 
@@ -37,6 +38,7 @@ impl ig::Agent{
 /*
 // agent type 2
 impl ig::Agent{
+    #[allow(unused_variables)]
     fn interact(&mut self, agents:&Vec<Box<ig::Agent>>, storage:&mut ig::DataManager){
         if self.time==0 {
             self.colliding = false;
@@ -86,16 +88,16 @@ impl ig::Agent{
             }
             if rand::random::<f64>() < 0.4{
                 let mut dir3 = self.dir.clone();
-                //dir3.rot(&ig::Vec3::new(1.0,0.0,0.0), std::f64::consts::PI*rand::random::<f64>());
-                dir3.rot(&ig::Vec3::new(0.0,0.0,1.0), std::f64::consts::PI/3.0);
+                //dir3.rot(&ig::Vec3::new(1.0,0.0,0.0), PI*rand::random::<f64>());
+                dir3.rot(&ig::Vec3::new(0.0,0.0,1.0), PI/3.0);
                 let mut agent = ig::Agent::new_with_dir(pos2, dir3);
                 agent.set_attr(&self.attr);
                 manager.add_agent(Box::new(agent)) as i32;
             }
             if rand::random::<f64>() < 0.4{
                 let mut dir3 = self.dir.clone();
-                //dir3.rot(&ig::Vec3::new(1.0,0.0,0.0), std::f64::consts::PI*rand::random::<f64>());
-                dir3.rot(&ig::Vec3::new(0.0,0.0,1.0), -std::f64::consts::PI/3.0);
+                //dir3.rot(&ig::Vec3::new(1.0,0.0,0.0), PI*rand::random::<f64>());
+                dir3.rot(&ig::Vec3::new(0.0,0.0,1.0), -PI/3.0);
                 let mut agent = ig::Agent::new_with_dir(pos2, dir3);
                 agent.set_attr(&self.attr);
                 manager.add_agent(Box::new(agent)) as i32;
@@ -109,6 +111,7 @@ impl ig::Agent{
 /*
 // agent type 3
 impl ig::Agent{
+    #[allow(unused_variables)]
     fn interact(&mut self, agents:&Vec<Box<ig::Agent>>, storage:&mut ig::DataManager){
         if self.time==0 {
             self.colliding = false;
@@ -190,7 +193,7 @@ impl ig::Agent{
             if branch_left{
                 let mut dir2 = self.dir.clone();
                 dir2.set_len(left_len);
-                dir2.rot2(std::f64::consts::PI/30.0);
+                dir2.rot2(PI/30.0);
 
                 if branch_right && pct_right > pct_left{
                     let mut agent = ig::Agent::new_with_dir(pos2, dir2);
@@ -211,7 +214,7 @@ impl ig::Agent{
             if branch_right{
                 let mut dir2 = self.dir.clone();
                 dir2.set_len(right_len);
-                dir2.rot2(-std::f64::consts::PI/30.0);
+                dir2.rot2(-PI/30.0);
 
                 if branch_left && pct_right < pct_left{
                     let mut agent = ig::Agent::new_with_dir(pos2, dir2);
@@ -239,17 +242,27 @@ impl ig::Agent{
 pub fn start() -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
-    let height: f32 = 1000.;
-    let width: f32 = 1000.;
+    log_1(&JsValue::from(format!("initializing server")));
+
+    let width: f32 = 1200.;
+    let height: f32 = 800.;
     let mut server = ig::Server::new(width, height);
     server.init();
+    server.duration(600);
+    server.set_zoom(0.5);
+    server.set_camera_rotation_speed(-0.5);
+    server.enable_camera_rotation(false);
+    server.set_camera_yaw(0.0);
+    server.set_camera_pitch(PI/2.);
+    server.enable_camera_rotation(false);
+    //server.bg(&ig::Color::new(0.0, 0.0, 0.0, 1.0));
+    server.bg_colors(&ig::Color::new(0.3, 0.5, 0.7, 1.0), &ig::Color::new(0.3, 0.5, 0.7, 1.0), &ig::Color::new(1.0, 1.0, 1.0, 1.0),  &ig::Color::new(0.9, 0.9, 0.9, 1.0));
 
-    
     // agent type 1
     let num = 40;
-    let inc = std::f64::consts::PI*2.0/num as f64;
+    let inc = PI*2.0/num as f64;
     for i in 0..num{
-        let mut a = ig::Agent::new_with_dir(
+        let a = ig::Agent::new_with_dir(
             ig::Vec3{x:(i as f64 * inc).cos()*1.0, y:(i as f64 * inc).sin()*1.0, z:0.0},
             ig::Vec3{x:((i+6)as f64 *inc).cos()*0.125, y:((i+6)as f64*inc).sin()*0.025, z:0.0});
         server.add_agent(Box::new(a));
@@ -273,9 +286,7 @@ pub fn start() -> Result<(), JsValue> {
     //call once per animation frame
     let f = std::rc::Rc::new(std::cell::RefCell::new(None));
     let g = f.clone();
-    let mut j:u32 = 0;
     *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
-        j+=1;
         server.draw();
         request_animation_frame(f.borrow().as_ref().unwrap());
     }) as Box<dyn FnMut()>));
@@ -287,4 +298,3 @@ pub fn start() -> Result<(), JsValue> {
 fn request_animation_frame(f: &Closure<dyn FnMut()>) {
     web_sys::window().unwrap().request_animation_frame(f.as_ref().unchecked_ref()).expect("should register 'requestAnimationFrame'");
 }
-
