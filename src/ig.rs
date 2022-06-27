@@ -13,26 +13,6 @@ use std::fmt;
 pub const TOLERANCE : f64 = 0.001;
 pub const ANGLE_TOLERANCE : f64 = std::f64::consts::PI/1000.0;
 
-/*
-pub struct TestServer{
-    objects: Vec<f64>,
-    time:u64,
-}
-impl TestServer{
-    pub fn new(width:f32, height:f32) -> Self{
-        TestServer{
-            objects: Vec::new(),
-            time: 0
-        }
-    }
-    pub fn init(&mut self){
-    }
-    pub fn draw(&mut self){
-        self.time += 1;
-    }
-}
-*/
-
 pub struct DataManager{
     pub adding_data: DataStorage,
     pub deleting_data: DataStorage,
@@ -65,7 +45,6 @@ impl DataManager{
         self.adding_data.add_surface(surface)
     }
     pub fn add_agent(&mut self, agent:Box<Agent>)->usize{
-        //web_sys::console::log_1(&JsValue::from(format!("DataManager::add_agent")));
         self.adding_data.add_agent(agent)
     }
 
@@ -89,61 +68,6 @@ impl DataManager{
         self.deleting_data.agent_index.push(index);
     }
 
-    /*
-    pub fn sort_deleting_data(&mut self){
-        if self.deleting_data.object_index.len()>0{
-            self.sort_deleting_object_index();
-        }
-        if self.deleting_data.point_index.len()>0{
-            self.sort_deleting_point_index();
-        }
-        if self.deleting_data.curve_index.len()>0{
-            self.sort_deleting_curve_index();
-        }
-        if self.deleting_data.surface_index.len()>0{
-            self.sort_deleting_surface_index();
-        }
-        if self.deleting_data.agent_index.len()>0{
-            self.sort_deleting_agent_index();
-        }
-    }
-
-    pub fn sort_deleting_object_index(&mut self){
-        // soft IDs from large to small to delete from the extend_from_slice
-        self.deleting_data.object_index.sort_by(|a, b| b.cmp(&a));
-    }
-//    pub fn sort_deleting_points(&mut self){
-//        // soft IDs from large to small to delete from the extend_from_slice
-//        self.deleting_data.points.sort_by(|a, b| b.id.cmp(&a.id));
-//    }
-
-    pub fn sort_deleting_point_index(&mut self){
-        // soft IDs from large to small to delete from the extend_from_slice
-        self.deleting_data.point_index.sort_by(|a, b| b.cmp(&a));
-    }
-
-//    pub fn sort_deleting_curves(&mut self){
-//        // soft IDs from large to small to delete from the extend_from_slice
-//        self.deleting_data.curves.sort_by(|a, b| b.id.cmp(&a.id));
-//    }
-
-    pub fn sort_deleting_curve_index(&mut self){
-        // soft IDs from large to small to delete from the extend_from_slice
-        self.deleting_data.curve_index.sort_by(|a, b| b.cmp(&a));
-    }
-//    pub fn sort_deleting_surfaces(&mut self){
-//        // soft IDs from large to small to delete from the extend_from_slice
-//        self.deleting_data.surfaces.sort_by(|a, b| b.id.cmp(&a.id));
-//    }
-    pub fn sort_deleting_surface_index(&mut self){
-        // soft IDs from large to small to delete from the extend_from_slice
-        self.deleting_data.surface_index.sort_by(|a, b| b.cmp(&a));
-    }
-    pub fn sort_deleting_agent_index(&mut self){
-        // soft IDs from large to small to delete from the extend_from_slice
-        self.deleting_data.agent_index.sort_by(|a, b| b.cmp(&a));
-    }
-    */
 }
 
 
@@ -560,7 +484,7 @@ impl/*<'a>*/ Server/*<'a>*/{
         if self.storage.agents.len() > 0{
             web_sys::console::log_1(&JsValue::from(format!("Server::agents.len()={}", self.storage.agents.len())));
         }
-        
+
         let mut agentsCopy : Vec<Box<Agent>> = Vec::new();
         for i in 0..self.storage.agents.len(){
             agentsCopy.push(Box::new((*self.storage.agents[i]).clone()));
