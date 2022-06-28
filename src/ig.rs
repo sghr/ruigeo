@@ -1,8 +1,8 @@
 use wasm_bindgen::prelude::*;
 use web_sys::WebGlRenderingContext as GL;
 use wasm_bindgen::JsCast;
-use web_sys::console::log_1;
 use web_sys::*;
+use web_sys::console::log_1;
 use std::fmt;
 use std::f64::consts::PI;
 
@@ -207,7 +207,7 @@ impl DataStorage{
     #[allow(dead_code)]
     pub fn add_curve(&mut self, curve:Box<Curve>)->usize{
         let id = self.curve_index.len()+self.curve_index_offset;
-        //web_sys::console::log_1(&JsValue::from(format!("DataStorage::add_curve id = {}", id)));
+        //log_1(&JsValue::from(format!("DataStorage::add_curve id = {}", id)));
         self.curves.push(curve);
         self.curve_index.push((self.curves.len()-1) as i32);
         //curve.id = id;
@@ -322,12 +322,12 @@ impl DataStorage{
             }
         }
         else{
-            web_sys::console::log_1(&JsValue::from(format!("at delete_surface: ERROR: surface index at {} is negative!", index)));
+            log_1(&JsValue::from(format!("at delete_surface: ERROR: surface index at {} is negative!", index)));
         }
     }
     #[allow(dead_code)]
     pub fn delete_agent(&mut self, index:i32){
-        //web_sys::console::log_1(&JsValue::from(format!("at delete_agent: index at {} ", index)));
+        //log_1(&JsValue::from(format!("at delete_agent: index at {} ", index)));
 
         if index>=0 && index < self.agent_index.len() as i32 && self.agent_index[index as usize] >= 0{
             self.agents.remove(self.agent_index[index as usize] as usize);
@@ -337,7 +337,7 @@ impl DataStorage{
             }
         }
         else{
-            web_sys::console::log_1(&JsValue::from(format!("at delete_agent: ERROR: agent index at {} is negative!", index)));
+            log_1(&JsValue::from(format!("at delete_agent: ERROR: agent index at {} is negative!", index)));
         }
     }
 
@@ -419,7 +419,7 @@ impl/*<'a>*/ Server/*<'a>*/{
         if deleting_data.point_index.len() > 0{
             deleting_data.sort_point_index();
             for i in 0..deleting_data.point_index.len(){
-                //web_sys::console::log_1(&JsValue::from(format!("Server::delete_data: deleting point index {}", deleting_data.point_index[i]))); //
+                //log_1(&JsValue::from(format!("Server::delete_data: deleting point index {}", deleting_data.point_index[i]))); //
                 self.storage.delete_point(deleting_data.point_index[i] );
             }
             self.glserver.clear_points();
@@ -432,7 +432,7 @@ impl/*<'a>*/ Server/*<'a>*/{
         if deleting_data.curve_index.len() > 0{
             deleting_data.sort_curve_index();
             for i in 0..deleting_data.curve_index.len(){
-                //web_sys::console::log_1(&JsValue::from(format!("Server::delete_data: deleting curve index {}", deleting_data.curve_index[i]))); //
+                //log_1(&JsValue::from(format!("Server::delete_data: deleting curve index {}", deleting_data.curve_index[i]))); //
                 self.storage.delete_curve(deleting_data.curve_index[i] );
             }
             self.glserver.clear_lines();
@@ -445,7 +445,7 @@ impl/*<'a>*/ Server/*<'a>*/{
         if deleting_data.surface_index.len() > 0{
             deleting_data.sort_surface_index();
             for i in 0..deleting_data.surface_index.len(){
-                //web_sys::console::log_1(&JsValue::from(format!("Server::delete_date: deleting surface index {}", deleting_data.surface_index[i]))); //
+                //log_1(&JsValue::from(format!("Server::delete_date: deleting surface index {}", deleting_data.surface_index[i]))); //
                 self.storage.delete_surface(deleting_data.surface_index[i] );
             }
             self.glserver.clear_surfaces();
@@ -458,18 +458,18 @@ impl/*<'a>*/ Server/*<'a>*/{
         if deleting_data.agent_index.len() > 0{
             deleting_data.sort_agent_index();
             for i in 0..deleting_data.agent_index.len(){
-                //web_sys::console::log_1(&JsValue::from(format!("Server::delete_date: deleting agent index {}", deleting_data.agent_index[i]))); //
+                //log_1(&JsValue::from(format!("Server::delete_date: deleting agent index {}", deleting_data.agent_index[i]))); //
                 self.storage.delete_agent(deleting_data.agent_index[i] );
             }
         }
 
-        //web_sys::console::log_1(&JsValue::from(format!("1 adding point num{}", manager.adding_data.points.len())));
+        //log_1(&JsValue::from(format!("1 adding point num{}", manager.adding_data.points.len())));
 
     }
 
     #[allow(dead_code)]
     pub fn add_data(&mut self, adding_data: DataStorage){
-        //web_sys::console::log_1(&JsValue::from(format!("Server::add_data"))); //
+        //log_1(&JsValue::from(format!("Server::add_data"))); //
         for o in adding_data.objects{
             self.add_object(o);
         }
@@ -542,7 +542,7 @@ impl/*<'a>*/ Server/*<'a>*/{
 
 
             if self.storage.agents.len() > 0{
-                web_sys::console::log_1(&JsValue::from(format!("Server::agents.len()={}", self.storage.agents.len())));
+                log_1(&JsValue::from(format!("Server::agents.len()={}", self.storage.agents.len())));
             }
 
             let mut agents_copy : Vec<Box<Agent>> = Vec::new();
@@ -559,13 +559,13 @@ impl/*<'a>*/ Server/*<'a>*/{
                 }
             }
 
-            //web_sys::console::log_1(&JsValue::from(format!("Server: end of interact")));
+            //log_1(&JsValue::from(format!("Server: end of interact")));
 
             for i in 0..self.storage.agents.len(){
                 self.storage.agents[i].update(&mut mgr);
             }
 
-            //web_sys::console::log_1(&JsValue::from(format!("Server: end of update")));
+            //log_1(&JsValue::from(format!("Server: end of update")));
 
             self.delete_data(mgr.deleting_data);
 
@@ -710,13 +710,13 @@ impl GlUniformColor{
     }
     #[allow(dead_code)]
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
-        //web_sys::console::log_1(&JsValue::from(format!("GlUniformColor::set_location name: {}", self.name )));
+        //log_1(&JsValue::from(format!("GlUniformColor::set_location name: {}", self.name )));
 
         self.location = Some(gl.get_uniform_location(&program, &self.name).unwrap());
     }
     #[allow(dead_code)]
     pub fn set_uniform(&mut self, gl:&GL){
-        //web_sys::console::log_1(&JsValue::from(format!("GlUniformColor::set_uniform color: {}", self.color )));
+        //log_1(&JsValue::from(format!("GlUniformColor::set_uniform color: {}", self.color )));
 
         gl.uniform4fv_with_f32_array(Some(&self.location.as_ref().unwrap()), &self.color.to_array());
     }
@@ -779,7 +779,7 @@ impl GlAttributeVec2{
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         let index = gl.get_attrib_location(&program, &self.name);
         if index<0{
-            web_sys::console::log_1(&JsValue::from(format!("GlAttributeVec2::set_location:ERROR parameter \"{}\" is not found", self.name)));
+            log_1(&JsValue::from(format!("GlAttributeVec2::set_location:ERROR parameter \"{}\" is not found", self.name)));
         }
         self.location = index as u32;
     }
@@ -813,7 +813,7 @@ impl GlAttributeVec2{
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
         unsafe {
             let f32_array = js_sys::Float32Array::view(&(*data));
-            gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &f32_array, GL::STATIC_DRAW)
+            gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &f32_array, GL::DYNAMIC_DRAW)
         }
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
@@ -834,7 +834,7 @@ impl GlAttributeVec3{
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         let index = gl.get_attrib_location(&program, &self.name);
         if index<0{
-            web_sys::console::log_1(&JsValue::from(format!("GlAttributeVec3::set_location:ERROR parameter \"{}\" is not found", self.name)));
+            log_1(&JsValue::from(format!("GlAttributeVec3::set_location:ERROR parameter \"{}\" is not found", self.name)));
         }
         self.location = index as u32;
     }
@@ -861,7 +861,7 @@ impl GlAttributeVec3{
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
         unsafe {
             let f32_array = js_sys::Float32Array::view(&(*data));
-            gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &f32_array, GL::STATIC_DRAW)
+            gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &f32_array, GL::DYNAMIC_DRAW)
         }
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
@@ -889,7 +889,7 @@ impl GlAttributeColor{
     pub fn set_location(&mut self, gl:&GL, program: &WebGlProgram){
         let index = gl.get_attrib_location(&program, &self.name);
         if index<0{
-            web_sys::console::log_1(&JsValue::from(format!("GlAttributeColor::set_location:ERROR parameter \"{}\" is not found", self.name)));
+            log_1(&JsValue::from(format!("GlAttributeColor::set_location:ERROR parameter \"{}\" is not found", self.name)));
         }
         self.location = index as u32;
     }
@@ -915,7 +915,7 @@ impl GlAttributeColor{
         gl.bind_buffer(GL::ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
         unsafe {
             let f32_array = js_sys::Float32Array::view(&(*data));
-            gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &f32_array, GL::STATIC_DRAW)
+            gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &f32_array, GL::DYNAMIC_DRAW)
         }
         gl.bind_buffer(GL::ARRAY_BUFFER, None);
     }
@@ -952,7 +952,7 @@ impl GlIndex{
         gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, Some(&self.buffer.as_ref().unwrap()));
         unsafe {
             let ui16_array = js_sys::Uint16Array::view(&(*data));
-            gl.buffer_data_with_array_buffer_view( GL::ELEMENT_ARRAY_BUFFER, &ui16_array, GL::STATIC_DRAW );
+            gl.buffer_data_with_array_buffer_view( GL::ELEMENT_ARRAY_BUFFER, &ui16_array, GL::DYNAMIC_DRAW );
         }
         gl.bind_buffer(GL::ELEMENT_ARRAY_BUFFER, None);
     }
@@ -1148,6 +1148,17 @@ impl GlSurface{
             }
         }
 
+
+        for i in 0..uval.len(){
+            log_1(&JsValue::from(format!("uval[{}] = {}", i, uval[i] )));
+        }
+        for i in 0..vval.len(){
+            log_1(&JsValue::from(format!("vval[{}] = {}", i, vval[i] )));
+        }
+
+
+
+
         if INSERT_POINT_ON_DEGREE1_TWISTED_SURFACE && surface.udeg()==1 && surface.vdeg()==1{
             let mut uinsert : Vec<bool> = Vec::new();
             let mut vinsert : Vec<bool> = Vec::new();
@@ -1213,8 +1224,8 @@ impl GlSurface{
                 vpos.push(p);
                 vnml.push(n);
 
-                //web_sys::console::log_1(&JsValue::from(format!("GlSurface.from: pos[{}][{}] {} ", i, j, &p )));
-                //web_sys::console::log_1(&JsValue::from(format!("GlSurface.from: nml[{}][{}] {} ", i, j, &n )));
+                //log_1(&JsValue::from(format!("GlSurface.from: pos[{}][{}] {} ", i, j, &p )));
+                //log_1(&JsValue::from(format!("GlSurface.from: nml[{}][{}] {} ", i, j, &n )));
 
             }
             pos.push(vpos);
@@ -1285,13 +1296,13 @@ impl GlPointBuffer{
         self.pos.push(pt.pos.x as f32);
         self.pos.push(pt.pos.y as f32);
         self.pos.push(pt.pos.z as f32);
-//        web_sys::console::log_1(&JsValue::from(format!("GlPointBuffer.add: pt {}, {}, {}", pt.pos.x, pt.pos.y, pt.pos.z )));
-//        web_sys::console::log_1(&JsValue::from(format!("GlPointBuffer.add: pt.index {}", pt.index )));
+//        log_1(&JsValue::from(format!("GlPointBuffer.add: pt {}, {}, {}", pt.pos.x, pt.pos.y, pt.pos.z )));
+//        log_1(&JsValue::from(format!("GlPointBuffer.add: pt.index {}", pt.index )));
     }
     #[allow(dead_code)]
     pub fn clear(&mut self){
         self.pos.clear();
-//        web_sys::console::log_1(&JsValue::from(format!("GlPointBuffer.clear: pos.len() = {}", self.pos.len() )));
+//        log_1(&JsValue::from(format!("GlPointBuffer.clear: pos.len() = {}", self.pos.len() )));
     }
 }
 
@@ -1328,7 +1339,7 @@ impl GlFaceBuffer{
                 self.nml.push(n2.y as f32);
                 self.nml.push(n2.z as f32);
 
-                //web_sys::console::log_1(&JsValue::from(format!("glFaceBuffer nml[{}][{}] = {}", i, j, n1 ))); //
+                //log_1(&JsValue::from(format!("glFaceBuffer nml[{}][{}] = {}", i, j, n1 ))); //
 
             }
         }
@@ -1455,7 +1466,7 @@ impl WebGlServer{
     pub fn clear_points(&mut self){
         self.point_buffer.clear();
         self.points.clear();
-//        web_sys::console::log_1(&JsValue::from(format!("clear_points: point.len() = {}", self.points.len() ))); //
+//        log_1(&JsValue::from(format!("clear_points: point.len() = {}", self.points.len() ))); //
     }
 
     #[allow(dead_code)]
@@ -1558,9 +1569,9 @@ impl WebGlServer{
         self.tmp_matrix = Matrix4::new_with_matrix4(&self.v_matrix);
         self.tmp_matrix.matmul(&self.p_matrix);
 
-        //web_sys::console::log_1(&JsValue::from(format!("P{:?}", self.p_matrix.to_array32())));
-        //web_sys::console::log_1(&JsValue::from(format!("V{:?}", self.v_matrix.to_array32())));
-        //web_sys::console::log_1(&JsValue::from(format!("T{:?}", self.tmp_matrix.to_array32())));
+        //log_1(&JsValue::from(format!("P{:?}", self.p_matrix.to_array32())));
+        //log_1(&JsValue::from(format!("V{:?}", self.v_matrix.to_array32())));
+        //log_1(&JsValue::from(format!("T{:?}", self.tmp_matrix.to_array32())));
 
         //let bg_geom = WebGlServer::bg_rect(Color::new(1.0,0.5,0.0,1.0), Color::new(1.0,0.0,0.0,1.0), Color::new(0.0,1.0,1.0,1.0), Color::new(0.5,0.5,1.0,1.0) );
         let bg_geom = WebGlServer::bg_rect(self.bg_colors[0], self.bg_colors[1], self.bg_colors[2], self.bg_colors[3] );
@@ -1571,9 +1582,9 @@ impl WebGlServer{
     }
 
     pub fn draw(&mut self){
-        let count = self.time; //self.server.unwrap().time();
+        //let count = self.time; //self.server.unwrap().time();
 
-        //self.gl.clear_color(1.0, 1.0, 1.0, 1.0);
+        //self.gl.clear_color(0.0, 0.0, 0.0, 1.0);
         self.gl.clear(GL::COLOR_BUFFER_BIT | GL::DEPTH_BUFFER_BIT);
         //self.gl.clear_depth(1.);
 
@@ -1597,11 +1608,21 @@ impl WebGlServer{
         self.gl.clear_depth(1.);
         self.gl.enable(GL::DEPTH_TEST);
 
+        //self.gl.enable(GL::BLEND); //
+        //self.gl.blend_func(GL::SRC_ALPHA, GL::ONE_MINUS_SRC_ALPHA); //
+
+
         //Webgl initialize
-        let i:f64 = (count % 360) as f64;
-        let mut rad =  i * PI / 180. * self.camera_rotation_speed + self.camera_yaw ;
+        //let i:f64 = (count % 360) as f64;
+        let mut rad =  self.time as f64 * PI / 180. * self.camera_rotation_speed + self.camera_yaw ;
         if ! self.camera_rotation{ rad = self.camera_yaw; }
 
+        if rad < 0.0 {
+            rad += ((-rad/(2.0*PI)).floor()+1.0)*2.0*PI;
+        }
+        else if rad >= 2.0*PI{
+            rad -= (rad/(2.0*PI)).floor()*2.0*PI;
+        }
 
         //view rotation
         //self.m_matrix = Matrix4::y_rotation(rad);
@@ -1690,7 +1711,10 @@ impl WebGlServer{
             self.surf_color.set_color(&srf.color);
             self.surf_color.set_uniform(&self.gl);
 
-            self.gl.draw_arrays(GL::TRIANGLE_STRIP, srf.index, srf.ulen()*(srf.vlen()-1)*2 );
+            for j in 0..srf.vlen()-1{
+                self.gl.draw_arrays(GL::TRIANGLE_STRIP, srf.index + srf.ulen()*2*j, srf.ulen()*2 );
+            }
+            //self.gl.draw_arrays(GL::TRIANGLE_STRIP, srf.index, srf.ulen()*(srf.vlen()-1)*2 );
         }
 
 
@@ -1768,7 +1792,7 @@ impl WebGlServer{
 ******************/
 
 pub const SEGMENT_RESOLUTION : u32 = 20; //10;
-pub const TESSELLATION_RESOLUTION : u32 = 10; //5;
+pub const TESSELLATION_RESOLUTION : u32 = 8; //10; //5; //10; //5;
 
 pub const INSERT_POINT_ON_DEGREE1_TWISTED_SURFACE : bool = true;
 
@@ -2150,11 +2174,11 @@ impl Curve{
         Curve{ id:-1, curve:CurveGeo::new_with_knots(cpts, degree, knots, ustart, uend),attr:Attribute::default()}
     }
     #[allow(dead_code)]
-    pub fn new_polyline(cpts:Vec<Vec3>)->Self{
+    pub fn polyline(cpts:Vec<Vec3>)->Self{
         Curve::new(cpts, 1)
     }
     #[allow(dead_code)]
-    pub fn new_line(pt1:Vec3, pt2:Vec3)->Self{
+    pub fn line(pt1:Vec3, pt2:Vec3)->Self{
         Curve::new(Vec::from([pt1,pt2]), 1)
     }
     #[allow(dead_code)]
@@ -2521,13 +2545,30 @@ impl Surface{
         Surface{ id:-1, surface:SurfaceGeo::new_with_knots(cpts, udegree, vdegree, uknots, vknots, ustart, uend, vstart, vend),attr:Attribute::default()}
     }
     #[allow(dead_code)]
-    pub fn new_quad(pt1:Vec3, pt2:Vec3, pt3:Vec3, pt4:Vec3)->Self{
+    pub fn quad(pt1:Vec3, pt2:Vec3, pt3:Vec3, pt4:Vec3)->Self{
         Surface::new(Vec::from([Vec::from([pt1,pt2]),Vec::from([pt4,pt3])]), 1, 1)
     }
 
     #[allow(dead_code)]
-    pub fn new_triangle(pt1:Vec3, pt2:Vec3, pt3:Vec3)->Self{
+    pub fn triangle(pt1:Vec3, pt2:Vec3, pt3:Vec3)->Self{
         Surface::new(Vec::from([Vec::from([pt1,pt2]),Vec::from([pt3,pt3.clone()])]), 1, 1)
+    }
+
+    #[allow(dead_code)]
+    pub fn square_pipe(pt1:Vec3, pt2:Vec3, size:f64)->Self{
+
+        let dir = pt2.dif(&pt1);
+        let mut t1 = dir.cross(&Vec3::new(0.0,0.0,1.0));
+        if t1.len2()<TOLERANCE {
+            t1.set(&dir.cross(&Vec3::new(1.0,0.0,0.0)));
+        }
+        let mut t2 = dir.cross(&t1);
+        t1.set_len(size/2.0);
+        t2.set_len(size/2.0);
+        let pts : Vec<Vec<Vec3>> = vec![
+        vec![ *pt1.dif(&t1).sub(&t2), *pt1.dif(&t1).add(&t2), *pt1.cp(&t1).add(&t2), *pt1.dif(&t1).add(&t1)],
+        vec![ *pt2.dif(&t1).sub(&t2), *pt2.dif(&t1).add(&t2), *pt2.cp(&t1).add(&t2), *pt2.dif(&t1).add(&t1)]];
+        Surface::new(pts, 1, 1)
     }
 
     #[allow(dead_code)]
@@ -2548,6 +2589,11 @@ impl Surface{
     #[allow(dead_code)]
     pub fn nml(&self, u:f64, v:f64)->Vec3{
         self.surface.nml(u, v)
+    }
+
+        #[allow(dead_code)]
+    pub fn off_pt(&self, u:f64, v:f64, n:f64)->Vec3{
+        self.surface.off_pt(u,v,n)
     }
 
 
@@ -2576,7 +2622,7 @@ impl Surface{
 
     #[allow(dead_code)]
     pub fn vep_num(&self)->usize{
-        self.surface.uep_num()
+        self.surface.vep_num()
     }
 
     #[allow(dead_code)]
@@ -2889,6 +2935,14 @@ impl SurfaceGeo{
         Vec3::zero() // normal is zero
     }
 
+    #[allow(dead_code)]
+    pub fn off_pt(&self, u:f64, v:f64, n:f64)->Vec3{
+        let mut pt = self.pt(u,v);
+        let mut nml = self.nml(u,v);
+        pt.add(nml.set_len(n));
+        pt
+    }
+
 }
 
 pub struct Point/*<'a>*/{
@@ -3091,7 +3145,7 @@ impl BSplineBasisFunction{
     pub fn new(degree:u8, knots:Vec<f64>)->Self{
         let mut func : Vec<Option<BSplineBasisSubFunction>> = Vec::new();
 
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}", degree, index, knots.len())));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}", degree, index, knots.len())));
 
         for i in 0..(knots.len()-degree as usize -1){
             func.push(Some(BSplineBasisSubFunction::new(degree,i as i32,knots.clone())));
@@ -3194,7 +3248,7 @@ impl BSplineBasisSubFunction{
     #[allow(dead_code)]
     pub fn new(degree:u8, index:i32, knots:Vec<f64>)->Self{
 
-//        web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}", degree, index, knots.len())));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}", degree, index, knots.len())));
 
         if degree==0{
             let mut dom : Vec<f64> = Vec::new();
@@ -3202,15 +3256,15 @@ impl BSplineBasisSubFunction{
             let coeff : Vec<f64> = Vec::from([1.0]);
             let f : PolynomialFunction = PolynomialFunction::new(0, coeff);
 
-//            web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, dom {}, returns", degree, index, knots.len(), dom.len())));
+            //log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, dom {}, returns", degree, index, knots.len(), dom.len())));
             return BSplineBasisSubFunction{ domains:dom, functions:Vec::from([None, Some(f), None]), degree, index, knots }
         }
 
         let mut bs1 = BSplineBasisSubFunction::new(degree-1, index, knots.clone());
         let mut bs2 = BSplineBasisSubFunction::new(degree-1, index+1, knots.clone());
 
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} next", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction bs1deg:{}, bs1idx:{}, bs1knots{}, bs1dom {}, bs2deg {}, bs2idx {}, bs2knots {}, bs2dom {},  next", bs1.degree, bs1.index, bs1.knots.len(), bs1.domains.len(), bs2.degree, bs2.index, bs2.knots.len(), bs2.domains.len() )));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} next", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction bs1deg:{}, bs1idx:{}, bs1knots{}, bs1dom {}, bs2deg {}, bs2idx {}, bs2knots {}, bs2dom {},  next", bs1.degree, bs1.index, bs1.knots.len(), bs1.domains.len(), bs2.degree, bs2.index, bs2.knots.len(), bs2.domains.len() )));
 
         let coeff1:[f64;2] = [
         -knots[index as usize]/(knots[(index+degree as i32) as usize] - knots[index as usize]),
@@ -3222,24 +3276,24 @@ impl BSplineBasisSubFunction{
         -1.0/(knots[(index+degree as i32+1)as usize] - knots[index as usize +1])];
         let p2 = PolynomialFunction::new(1, Vec::from(coeff2));
 
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} mul1", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction bs1dom:{}, bs2dom:{},"", degree, index, knots.len())));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} mul1", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction bs1dom:{}, bs2dom:{},"", degree, index, knots.len())));
 
         bs1.mul(&p1);
 
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} mul2", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} mul2", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
 
         bs2.mul(&p2);
 
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} add", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} add", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
 
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction: BEFORE_ADD: bs1deg:{}, bs1idx:{}, bs1knots{}, bs1dom {}, bs2deg {}, bs2idx {}, bs2knots {}, bs2dom {},  next", bs1.degree, bs1.index, bs1.knots.len(), bs1.domains.len(), bs2.degree, bs2.index, bs2.knots.len(), bs2.domains.len() )));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction: BEFORE_ADD: bs1deg:{}, bs1idx:{}, bs1knots{}, bs1dom {}, bs2deg {}, bs2idx {}, bs2knots {}, bs2dom {},  next", bs1.degree, bs1.index, bs1.knots.len(), bs1.domains.len(), bs2.degree, bs2.index, bs2.knots.len(), bs2.domains.len() )));
 
         bs1.add(&bs2);
 
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} end", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction deg:{}, idx:{}, knots{}, bs1dom {}, bs2dom {} end", degree, index, knots.len(), bs1.domains.len(), bs2.domains.len() )));
 
-        //web_sys::console::log_1(&JsValue::from(format!("BSplineBasisSubFunction: end of init: bs1deg:{}", bs1.degree))); //
+        //log_1(&JsValue::from(format!("BSplineBasisSubFunction: end of init: bs1deg:{}", bs1.degree))); //
 
         BSplineBasisSubFunction{
             domains:bs1.domains,
@@ -3294,40 +3348,40 @@ impl BSplineBasisSubFunction{
         /*
         for i in 0..bs1.functions.len(){
             if bs1.functions[i].is_none(){
-                web_sys::console::log_1(&JsValue::from(format!("add_domain_and_function: bs1.functions[{}] : None", i)));
+                log_1(&JsValue::from(format!("add_domain_and_function: bs1.functions[{}] : None", i)));
             }
             else{
-                web_sys::console::log_1(&JsValue::from(format!("add_domain_and_function: bs1.functions[{}] : Not None", i)));
+                log_1(&JsValue::from(format!("add_domain_and_function: bs1.functions[{}] : Not None", i)));
             }
         }
         for i in 0..bs2.functions.len(){
             if bs2.functions[i].is_none(){
-                web_sys::console::log_1(&JsValue::from(format!("add_domain_and_function: bs2.functions[{}] : None", i)));
+                log_1(&JsValue::from(format!("add_domain_and_function: bs2.functions[{}] : None", i)));
             }
             else{
-                web_sys::console::log_1(&JsValue::from(format!("add_domain_and_function: bs2.functions[{}] : Not None", i)));
+                log_1(&JsValue::from(format!("add_domain_and_function: bs2.functions[{}] : Not None", i)));
             }
         }
         */
 
-        //web_sys::console::log_1(&JsValue::from(format!("add_domain_and_function: 0 bs1.deg {} ,  bs1.index {}, bs2.deg {}, bs2.index {}", &bs1.degree, &bs1.index, &bs2.degree, &bs2.index )));
-        //web_sys::console::log_1(&JsValue::from(format!("add_domain_and_function: bs1deg:{}, bs1idx:{}, bs1knots{}, bs1dom {}, bs2deg {}, bs2idx {}, bs2knots {}, bs2dom {},  next", bs1.degree, bs1.index, bs1.knots.len(), bs1.domains.len(), bs2.degree, bs2.index, bs2.knots.len(), bs2.domains.len() )));
+        //log_1(&JsValue::from(format!("add_domain_and_function: 0 bs1.deg {} ,  bs1.index {}, bs2.deg {}, bs2.index {}", &bs1.degree, &bs1.index, &bs2.degree, &bs2.index )));
+        //log_1(&JsValue::from(format!("add_domain_and_function: bs1deg:{}, bs1idx:{}, bs1knots{}, bs1dom {}, bs2deg {}, bs2idx {}, bs2knots {}, bs2dom {},  next", bs1.degree, bs1.index, bs1.knots.len(), bs1.domains.len(), bs2.degree, bs2.index, bs2.knots.len(), bs2.domains.len() )));
 
         /*
         for j in 0..bs1.functions.len(){
             if bs1.functions[j].is_none(){
-                web_sys::console::log_1(&JsValue::from(format!("add:: bs1.functions[{}]: None", j)));
+                log_1(&JsValue::from(format!("add:: bs1.functions[{}]: None", j)));
             }
             else{
-                web_sys::console::log_1(&JsValue::from(format!("add:: bs1.functions[{}]: Not None", j)));
+                log_1(&JsValue::from(format!("add:: bs1.functions[{}]: Not None", j)));
             }
         }
         for j in 0..bs2.functions.len(){
             if bs2.functions[j].is_none(){
-                web_sys::console::log_1(&JsValue::from(format!("add:: bs2.functions[{}]: None", j)));
+                log_1(&JsValue::from(format!("add:: bs2.functions[{}]: None", j)));
             }
             else{
-                web_sys::console::log_1(&JsValue::from(format!("add:: bs2.functions[{}]: Not None", j)));
+                log_1(&JsValue::from(format!("add:: bs2.functions[{}]: Not None", j)));
             }
         }
         */
@@ -3349,10 +3403,10 @@ impl BSplineBasisSubFunction{
             i+=1;
         }
 
-//        web_sys::console::log_1(&JsValue::from(format!("bs1deg {} , bs2deg {}",bs1deg, bs2deg)));
+//        log_1(&JsValue::from(format!("bs1deg {} , bs2deg {}",bs1deg, bs2deg)));
 
-//        web_sys::console::log_1(&JsValue::from(format!("add_domain_and_function: new_dom.len {} , bs1.dom.len {}, bs2.dom.len {}", new_dom.len(), bs1.domains.len(), bs2.domains.len())));
-//        web_sys::console::log_1(&JsValue::from(format!("i {} , bs1.index {}, bs2.index {}", i, bs1.index, bs2.index)));
+//        log_1(&JsValue::from(format!("add_domain_and_function: new_dom.len {} , bs1.dom.len {}, bs2.dom.len {}", new_dom.len(), bs1.domains.len(), bs2.domains.len())));
+//        log_1(&JsValue::from(format!("i {} , bs1.index {}, bs2.index {}", i, bs1.index, bs2.index)));
 
         while i< ((bs2domlen + bs2.index - bs1.index) as usize){
 
@@ -3403,10 +3457,10 @@ impl BSplineBasisSubFunction{
         /*
         for j in 0..new_func.len(){
             if new_func[j].is_none(){
-                web_sys::console::log_1(&JsValue::from(format!("new_func[{}]: None", j)));
+                log_1(&JsValue::from(format!("new_func[{}]: None", j)));
             }
             else{
-                web_sys::console::log_1(&JsValue::from(format!("new_func[{}]: Not None", j)));
+                log_1(&JsValue::from(format!("new_func[{}]: Not None", j)));
             }
         }
         */

@@ -2,6 +2,8 @@ use wasm_bindgen::prelude::*;
 use wasm_bindgen::*;
 use web_sys::console::log_1;
 use std::f64::consts::PI;
+use ig::{Vec3, Color};
+
 mod ig;
 
 
@@ -16,13 +18,13 @@ impl ig::Agent{
         let mut dir2 = self.dir.clone();
 
         if pos2.x > 0.0{
-            dir2.add(&ig::Vec3::new(-0.0025, 0.0, 0.0));
+            dir2.add(&Vec3::new(-0.0025, 0.0, 0.0));
         }
         else{
-            dir2.add(&ig::Vec3::new(0.0025, 0.0, 0.0));
+            dir2.add(&Vec3::new(0.0025, 0.0, 0.0));
         }
 
-        let mut line = ig::Curve::new_line(self.pos, pos2);
+        let mut line = ig::Curve::line(self.pos, pos2);
         let t = (manager.time as f64*0.01).sin() as f32;
         line.clr(t, 0.5-t*0.5, 1.0-t, 1.0 );
         manager.add_curve(Box::new(line));
@@ -88,16 +90,16 @@ impl ig::Agent{
             }
             if rand::random::<f64>() < 0.4{
                 let mut dir3 = self.dir.clone();
-                //dir3.rot(&ig::Vec3::new(1.0,0.0,0.0), PI*rand::random::<f64>());
-                dir3.rot(&ig::Vec3::new(0.0,0.0,1.0), PI/3.0);
+                //dir3.rot(&Vec3::new(1.0,0.0,0.0), PI*rand::random::<f64>());
+                dir3.rot(&Vec3::new(0.0,0.0,1.0), PI/3.0);
                 let mut agent = ig::Agent::new_with_dir(pos2, dir3);
                 agent.set_attr(&self.attr);
                 manager.add_agent(Box::new(agent)) as i32;
             }
             if rand::random::<f64>() < 0.4{
                 let mut dir3 = self.dir.clone();
-                //dir3.rot(&ig::Vec3::new(1.0,0.0,0.0), PI*rand::random::<f64>());
-                dir3.rot(&ig::Vec3::new(0.0,0.0,1.0), -PI/3.0);
+                //dir3.rot(&Vec3::new(1.0,0.0,0.0), PI*rand::random::<f64>());
+                dir3.rot(&Vec3::new(0.0,0.0,1.0), -PI/3.0);
                 let mut agent = ig::Agent::new_with_dir(pos2, dir3);
                 agent.set_attr(&self.attr);
                 manager.add_agent(Box::new(agent)) as i32;
@@ -120,7 +122,7 @@ impl ig::Agent{
                 if agents[i].id != self.id{
                     let apos2 = agents[i].pos.cp(&agents[i].dir);
                     if !apos2.eq(&self.pos) && !agents[i].pos.eq(&self.pos) {
-                        let itxn =  ig::Vec3::intersect_segment(&agents[i].pos, &apos2, &self.pos, &pos2 );
+                        let itxn =  Vec3::intersect_segment(&agents[i].pos, &apos2, &self.pos, &pos2 );
                         if !itxn.is_none(){
                             if self.vecs.len()==0{
                                 self.vecs.push(itxn.unwrap());
@@ -139,7 +141,7 @@ impl ig::Agent{
     fn update(&mut self, manager:&mut ig::DataManager){
         if self.time==0{
             if self.colliding{
-                //web_sys::console::log_1(&JsValue::from(format!("Agent::update: Collided, delete" )));
+                //log_1(&JsValue::from(format!("Agent::update: Collided, delete" )));
                 manager.delete_agent(self.id);
                 return;
             }
@@ -156,8 +158,8 @@ impl ig::Agent{
             let z1 = ((manager.time as f64*0.05).sin())*0.5 + 0.75;
             let z2 = ((manager.time as f64+1.0)*0.05).sin()*0.5 + 0.75;
 
-            let zpos1 = self.pos.cp(&ig::Vec3::new(0.0,0.0,z1));
-            let zpos2 = pos2.cp(&ig::Vec3::new(0.0,0.0,z2));
+            let zpos1 = self.pos.cp(&Vec3::new(0.0,0.0,z1));
+            let zpos2 = pos2.cp(&Vec3::new(0.0,0.0,z2));
 
             let mut srf = ig::Surface::new_quad(self.pos, pos2, zpos2, zpos1);
             srf.hsb((manager.time as f64*0.01).sin() as f32, 0.5, 1.0, 0.5 );
@@ -250,38 +252,38 @@ pub fn start() -> Result<(), JsValue> {
     server.init();
     server.duration(600);
     server.set_zoom(0.5);
-    server.set_camera_rotation_speed(-0.5);
+    server.set_camera_rotation_speed(0.5);
     server.enable_camera_rotation(false);
     server.set_camera_yaw(0.0);
     server.set_camera_pitch(PI/2.);
-    server.enable_camera_rotation(false);
-    //server.bg(&ig::Color::new(0.0, 0.0, 0.0, 1.0));
-    server.bg_colors(&ig::Color::new(0.3, 0.5, 0.7, 1.0), &ig::Color::new(0.3, 0.5, 0.7, 1.0), &ig::Color::new(1.0, 1.0, 1.0, 1.0),  &ig::Color::new(0.9, 0.9, 0.9, 1.0));
+    //server.bg(&Color::new(0.0, 0.0, 0.0, 1.0));
+    server.bg_colors(&Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(1.0, 1.0, 1.0, 1.0),  &Color::new(0.9, 0.9, 0.9, 1.0));
 
     // agent type 1
     let num = 40;
     let inc = PI*2.0/num as f64;
     for i in 0..num{
         let a = ig::Agent::new_with_dir(
-            ig::Vec3{x:(i as f64 * inc).cos()*1.0, y:(i as f64 * inc).sin()*1.0, z:0.0},
-            ig::Vec3{x:((i+6)as f64 *inc).cos()*0.125, y:((i+6)as f64*inc).sin()*0.025, z:0.0});
+            Vec3{x:(i as f64 * inc).cos()*1.0, y:(i as f64 * inc).sin()*1.0, z:0.0},
+            Vec3{x:((i+6)as f64 *inc).cos()*0.125, y:((i+6)as f64*inc).sin()*0.025, z:0.0});
         server.add_agent(Box::new(a));
     }
 
     /*
     // agent type 2
-    let mut a = ig::Agent::new_with_dir(ig::Vec3{x:0.0, y:0.0, z:0.0}, ig::Vec3{x:0.0, y:0.2, z:0.0});
+    let mut a = ig::Agent::new_with_dir(Vec3{x:0.0, y:0.0, z:0.0}, Vec3{x:0.0, y:0.2, z:0.0});
     a.clr(0.0,0.0,0.0,1.0);
     server.add_agent(Box::new(a));
     */
     /*
     // agent type 3
-    let mut a = ig::Agent::new_with_dir(ig::Vec3{x:0.0, y:0.0, z:0.0}, ig::Vec3{x:0.05, y:0.0, z:0.0});
+    let mut a = ig::Agent::new_with_dir(Vec3{x:0.0, y:0.0, z:0.0}, Vec3{x:0.05, y:0.0, z:0.0});
     a.clr(1.0,1.0,0.0,1.0);
     a.params.push(100.0);
     a.params.push(4.5);
     server.add_agent(Box::new(a));
     */
+
 
     //call once per animation frame
     let f = std::rc::Rc::new(std::cell::RefCell::new(None));

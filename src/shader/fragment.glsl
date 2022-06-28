@@ -17,6 +17,7 @@ void main(void){
     diffuse = clamp(diffuse + diffuse2 * 0.25, 0.0, 1.0);
     float specular  = pow(clamp(dot(vNormal, halfLE), 0.0, 1.0), 50.0);
     vec4  destColor = color * vec4(vec3(diffuse), 1.0) + vec4(vec3(specular), 1.0) + ambientColor;
+    destColor = vec4 (destColor.rgb, color.a);
 //    gl_FragColor = ambientColor + ( diffuse*color) + vec4(vec3(specular), color.a);
     gl_FragColor    = flatShading>0? color:destColor;
 }
