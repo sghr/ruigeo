@@ -7,6 +7,154 @@ use ig::{Vec3, Color};
 mod ig;
 
 
+// agent 20220629_1
+impl ig::Agent{
+    #[allow(unused_variables)]
+    fn interact(&mut self, agents:&Vec<Box<ig::Agent>>, manager:&mut ig::DataManager){
+    }
+
+    fn update(&mut self, manager:&mut ig::DataManager){
+        let pos2 = self.pos.cp(&self.dir);
+        let mut dir2 = self.dir.clone();
+
+        //dir2.add(&Vec3{x:0.01, y:-0.01, z:0.0});
+        //dir2.rot(&Vec3{x:0.0, y:0.0, z:1.0}, PI*0.89);
+        //dir2.mul(1.004);
+
+        /*
+        if dir2.x > 0.0 {
+            //dir2.rot(&Vec3{x:0.0, y:0.0, z:1.0}, PI*0.39);
+            //dir2.mul(1.004);
+            dir2.set( &Vec3{x: 0.0, y: dir2.x, z:0.0} );
+            //dir2.add(&Vec3{x:0.5, y:-0.3, z:0.0});
+        }
+        else if dir2.y > 0.0 {
+            dir2.set( &Vec3{x: -dir2.y-1.0, y: 0.0, z:0.0} );
+        }
+        else if dir2.x < 0.0{
+            dir2.set( &Vec3{x: 0.0, y: dir2.x, z:0.0} );
+        }
+        else if dir2.y < 0.0{
+            dir2.set( &Vec3{x: -dir2.y+1.0, y: 0.0, z:0.0} );
+        }
+        */
+
+        /*
+        if manager.time < 100{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/30.0 );
+            dir2.mul(0.99);
+        }
+        else if manager.time < 200{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, -PI/15.0 );
+            dir2.mul(1.01);
+        }
+        else if manager.time < 300{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, -PI/15.0 );
+            dir2.mul(1.01);
+        }
+        else if manager.time < 330{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, -PI/15.0 );
+            dir2.mul(1.01);
+        }
+        else{
+            dir2.add(&Vec3{x:0.0, y:-0.05, z:0.0});
+        }
+        */
+
+        /*
+        if manager.time % 15 == 0 {
+            dir2.neg();
+            dir2.mul(1.01);
+        }
+        else{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/25.0 );
+        }
+        */
+
+        /*
+        if manager.time % 50 < 10{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/20.0 );
+        }
+        else if manager.time % 50 == 10{
+            dir2.neg();
+        }
+        else if manager.time % 50 < 30{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/11.0 );
+        }
+        else if manager.time % 50 < 40{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, -PI/21.0 );
+        }
+        else if manager.time % 50 == 40{
+            dir2.neg();
+        }
+        else{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/15.0 );
+            dir2.mul(1.01);
+        }
+        */
+
+        //let r = rand::random::<f64>();
+        //dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, (r-0.5)*2.0 );
+        
+        /*
+        let r = rand::random::<f64>();
+        if r < 0.025{
+            dir2.neg();
+            dir2.mul(1.1);
+        }
+        else{
+            dir2.mul(0.996);
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/25.0 );
+        }
+        */
+
+
+        if manager.time % 60 < 20{
+            //dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/20.0 );
+        }
+        else if manager.time % 60 == 20{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/3.0 );
+        }
+        else if manager.time % 60 < 41{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/3.0 );
+            dir2.mul(1.05);
+        }
+        else if manager.time % 60 < 50{
+            dir2.mul(0.99);
+        }
+        else if manager.time % 60 == 50{
+            dir2.neg();
+            dir2.mul(0.40);
+        }
+        else{
+            dir2.rot( &Vec3{x:0.0,y:0.0,z:1.0}, PI/17.0 );
+            dir2.mul(1.01);
+        }
+
+
+
+        let mut line = ig::Curve::line(self.pos, pos2);
+        //let t = (manager.time as f64*0.01).sin() as f32;
+        //line.clr(t, 0.5-t*0.5, 1.0-t, 1.0 );
+        //line.clr(1.0, 1.0, 0.0, 1.0);
+        //let t = manager.time as f32 * 0.001;
+        let t = (manager.time as f32 * 0.02).sin() ;
+        line.clr( 1.0-t*2.0, 0.3, 1.0-t*4.0, 0.4 );
+        //line.clr( 1.0-t*2.0, 1.0, 1.0-t*4.0, 0.4 );
+        //line.hsb(t, 1.0, 1.0, 1.0 );
+
+        manager.add_curve(Box::new(line));
+
+        let mut agent = ig::Agent::new_with_dir(pos2, dir2);
+        agent.set_attr(&self.attr);
+        manager.add_agent(Box::new(agent)) as i32;
+
+        manager.delete_agent(self.id);
+    }
+}
+
+
+/*
 // agent type 1
 impl ig::Agent{
     #[allow(unused_variables)]
@@ -36,6 +184,7 @@ impl ig::Agent{
         manager.delete_agent(self.id);
     }
 }
+*/
 
 /*
 // agent type 2
@@ -250,24 +399,41 @@ pub fn start() -> Result<(), JsValue> {
     let height: f32 = 800.;
     let mut server = ig::Server::new(width, height);
     server.init();
-    server.duration(600);
-    server.set_zoom(0.5);
+    //server.duration(600);
+    server.duration(1000);
+    //server.set_zoom(0.05);
+    server.set_zoom(0.1);
+    //server.set_zoom(1.0);
     server.set_camera_rotation_speed(0.5);
     server.enable_camera_rotation(false);
     server.set_camera_yaw(0.0);
     server.set_camera_pitch(PI/2.);
     //server.bg(&Color::new(0.0, 0.0, 0.0, 1.0));
-    server.bg_colors(&Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(1.0, 1.0, 1.0, 1.0),  &Color::new(0.9, 0.9, 0.9, 1.0));
+    server.bg_colors(&Color::new(0.0, 0.0, 0.0, 1.0), &Color::new(0.0, 0.0, 0.0, 1.0), &Color::new(0.1, 0.0, 0.3, 1.0),  &Color::new(0.2, 0.2, 0.2, 1.0));
+    //server.bg_colors(&Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(1.0, 1.0, 1.0, 1.0),  &Color::new(0.9, 0.9, 0.9, 1.0));
+
+    /*
+    let a = ig::Agent::new_with_dir(Vec3{x:0.0, y:0.0, z:0.0}, Vec3{x:0.0, y:1.0, z:0.0});
+    server.add_agent(Box::new(a));
+    */
 
     // agent type 1
     let num = 40;
     let inc = PI*2.0/num as f64;
     for i in 0..num{
+
         let a = ig::Agent::new_with_dir(
             Vec3{x:(i as f64 * inc).cos()*1.0, y:(i as f64 * inc).sin()*1.0, z:0.0},
-            Vec3{x:((i+6)as f64 *inc).cos()*0.125, y:((i+6)as f64*inc).sin()*0.025, z:0.0});
+            Vec3{x:((i+6)as f64 *inc).cos()*1.25, y:((i+6)as f64*inc).sin()*0.25, z:0.0});
+            /*
+        let a = ig::Agent::new_with_dir(
+            Vec3{x: i as f64 * 1.0, y: i as f64 * -1.0, z:0.0},
+            Vec3{x:0.0, y:1.0, z:0.0});
+            */
+
         server.add_agent(Box::new(a));
     }
+
 
     /*
     // agent type 2
