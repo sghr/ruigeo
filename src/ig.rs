@@ -368,6 +368,7 @@ pub struct Server/*<'a>*/{
     glserver: WebGlServer/*<'a>*/,
     time:i64,
     duration:i64,
+    max_agent_limit:i32,
 }
 
 impl/*<'a>*/ Server/*<'a>*/{
@@ -380,7 +381,8 @@ impl/*<'a>*/ Server/*<'a>*/{
             //dynamic_server: DynamicServer::new(),
             glserver:WebGlServer::new(width,height),
             time: 0,
-            duration : -1
+            duration : -1,
+            max_agent_limit:-1
         }
     }
 
@@ -409,6 +411,9 @@ impl/*<'a>*/ Server/*<'a>*/{
     }
     #[allow(dead_code)]
     pub fn add_agent(&mut self, agent:Box<Agent>)->usize{
+        if self.max_agent_limit >= 0 && self.storage.agents.len() as i32 >= self.max_agent_limit{
+            return 0; // shouldn't this be -1?
+        }
         let id = self.storage.add_agent(agent);
         //agent.set_id(id);
         id
@@ -488,6 +493,10 @@ impl/*<'a>*/ Server/*<'a>*/{
     }
 
     #[allow(dead_code)]
+    pub fn set_active_agent_limit_num(&mut self, max_count:i32){
+        self.max_agent_limit = max_count;
+    }
+    #[allow(dead_code)]
     pub fn set_zoom(&mut self, zoom:f64){
         self.glserver.set_zoom_ratio(zoom);
     }
@@ -545,31 +554,33 @@ impl/*<'a>*/ Server/*<'a>*/{
                 log_1(&JsValue::from(format!("Server::agents.len()={}", self.storage.agents.len())));
             }
 
-            let mut agents_copy : Vec<Box<Agent>> = Vec::new();
-            for i in 0..self.storage.agents.len(){
-                agents_copy.push(Box::new((*self.storage.agents[i]).clone()));
-            }
+            if self.max_agent_limit < 0 || (self.storage.agents.len() as i32) < self.max_agent_limit {
+                let mut agents_copy : Vec<Box<Agent>> = Vec::new();
+                for i in 0..self.storage.agents.len(){
+                    agents_copy.push(Box::new((*self.storage.agents[i]).clone()));
+                }
 
-            for i in 0..self.storage.agents.len(){
-                for j in 0..self.storage.agents.len(){
-                    if i!=j{
-                        //self.storage.agents[i].interact(agents[j], &mut mgr);
-                        Agent::interact(&mut self.storage.agents[i], &agents_copy, &mut mgr)
+                for i in 0..self.storage.agents.len(){
+                    for j in 0..self.storage.agents.len(){
+                        if i!=j{
+                            //self.storage.agents[i].interact(agents[j], &mut mgr);
+                            Agent::interact(&mut self.storage.agents[i], &agents_copy, &mut mgr)
+                        }
                     }
                 }
+
+                //log_1(&JsValue::from(format!("Server: end of interact")));
+
+                for i in 0..self.storage.agents.len(){
+                    self.storage.agents[i].update(&mut mgr);
+                }
+
+                //log_1(&JsValue::from(format!("Server: end of update")));
+
+                self.delete_data(mgr.deleting_data);
+
+                self.add_data(mgr.adding_data);
             }
-
-            //log_1(&JsValue::from(format!("Server: end of interact")));
-
-            for i in 0..self.storage.agents.len(){
-                self.storage.agents[i].update(&mut mgr);
-            }
-
-            //log_1(&JsValue::from(format!("Server: end of update")));
-
-            self.delete_data(mgr.deleting_data);
-
-            self.add_data(mgr.adding_data);
         }
         self.time += 1;
     }
@@ -1147,18 +1158,7 @@ impl GlSurface{
                 }
             }
         }
-
-
-        for i in 0..uval.len(){
-            log_1(&JsValue::from(format!("uval[{}] = {}", i, uval[i] )));
-        }
-        for i in 0..vval.len(){
-            log_1(&JsValue::from(format!("vval[{}] = {}", i, vval[i] )));
-        }
-
-
-
-
+        
         if INSERT_POINT_ON_DEGREE1_TWISTED_SURFACE && surface.udeg()==1 && surface.vdeg()==1{
             let mut uinsert : Vec<bool> = Vec::new();
             let mut vinsert : Vec<bool> = Vec::new();
@@ -1922,6 +1922,7 @@ pub struct Agent{
     pub fric:f64,
     pub dir:Vec3,
     pub nml:Vec3,
+    pub orient:Orient,
     pub time:i64,
     pub colliding:bool,
     pub vecs:Vec<Vec3>,
@@ -1933,11 +1934,15 @@ pub struct Agent{
 impl Agent{
     #[allow(dead_code)]
     pub fn new(pos:Vec3)->Self{
-        Agent{id:-1, pos, vel:Vec3::zero(), frc:Vec3::zero(), fric:0.0, dir:Vec3::zero(), nml:Vec3::zero(), time:0, colliding:false, vecs:Vec::new(), params:Vec::new(), attr:Attribute::default() }
+        Agent{id:-1, pos, vel:Vec3::zero(), frc:Vec3::zero(), fric:0.0, dir:Vec3::zero(), nml:Vec3::zero(), orient:Orient::new(Vec3::new(1.0,0.0,0.0),Vec3::new(0.0,0.0,1.0)), time:0, colliding:false, vecs:Vec::new(), params:Vec::new(), attr:Attribute::default() }
     }
     #[allow(dead_code)]
     pub fn new_with_dir(pos:Vec3, dir:Vec3)->Self{
-        Agent{id:-1, pos, vel:Vec3::zero(), frc:Vec3::zero(), fric:0.0, dir, nml:Vec3::zero(), time:0, colliding:false, vecs:Vec::new(), params:Vec::new(), attr:Attribute::default() }
+        Agent{id:-1, pos, vel:Vec3::zero(), frc:Vec3::zero(), fric:0.0, dir, nml:Vec3::zero(), orient:Orient::new(Vec3::new(1.0,0.0,0.0),Vec3::new(0.0,0.0,1.0)), time:0, colliding:false, vecs:Vec::new(), params:Vec::new(), attr:Attribute::default() }
+    }
+    #[allow(dead_code)]
+    pub fn new_with_orient(pos:Vec3, orient:Orient)->Self{
+        Agent{id:-1, pos, vel:Vec3::zero(), frc:Vec3::zero(), fric:0.0, dir:Vec3::zero(), nml:Vec3::zero(), orient , time:0, colliding:false, vecs:Vec::new(), params:Vec::new(), attr:Attribute::default() }
     }
     //fn init(&dyn self, server: &mut Server){ server.add_agent(Box::new(self)); }
     #[allow(dead_code)]
@@ -4000,6 +4005,107 @@ pub struct Vec4{
     z:f64,
     w:f64
 }
+
+#[derive(Debug, Clone, Copy)]
+pub struct Orient{
+    dir:Vec3,
+    nml:Vec3,
+    righthand:bool,
+}
+
+impl Orient{
+    #[allow(dead_code)]
+    pub fn new(dir:Vec3, nml:Vec3)->Self{
+        Orient{dir, nml, righthand:true}
+    }
+    #[allow(dead_code)]
+    pub fn clone(&self)->Self{
+        Orient{dir:self.dir.clone(), nml:self.nml.clone(), righthand:self.righthand.clone()}
+    }
+    #[allow(dead_code)]
+    pub fn front(&self)->Vec3{
+        self.dir.clone()
+    }
+    #[allow(dead_code)]
+    pub fn back(&self)->Vec3{
+        *self.dir.clone().neg()
+    }
+    #[allow(dead_code)]
+    pub fn up(&self)->Vec3{
+        self.nml.clone()
+    }
+    #[allow(dead_code)]
+    pub fn down(&self)->Vec3{
+        self.nml.clone()
+    }
+    #[allow(dead_code)]
+    pub fn right(&self)->Vec3{
+        if self.righthand{
+            return self.dir.cross(&self.nml);
+        }
+        self.nml.cross(&self.dir)
+    }
+    #[allow(dead_code)]
+    pub fn left(&self)->Vec3{
+        if self.righthand{
+            return self.nml.cross(&self.dir);
+        }
+        self.dir.cross(&self.nml)
+    }
+    #[allow(dead_code)]
+    pub fn rot(&mut self, a:f64)->&mut Self{
+        self.dir.rot(&self.nml, a);
+        self
+    }
+    #[allow(dead_code)]
+    pub fn yaw(&mut self, a:f64)->&mut Self{
+        self.dir.rot(&self.nml, a);
+        self
+    }
+    #[allow(dead_code)]
+    pub fn pitch(&mut self, a:f64)->&mut Self{
+        let ax = self.dir.cross(&self.nml);
+        self.dir.rot(&ax, a);
+        self.nml.rot(&ax, a);
+        self
+    }
+    #[allow(dead_code)]
+    pub fn roll(&mut self, a:f64)->&mut Self{
+        self.nml.rot(&self.dir, a);
+        self
+    }
+    #[allow(dead_code)]
+    pub fn flip(&mut self)->&mut Self{
+        self.dir.neg();
+        self.righthand = !self.righthand;
+        self
+    }
+    #[allow(dead_code)]
+    pub fn flip_nml(&mut self)->&mut Self{
+        self.nml.neg();
+        self.righthand = !self.righthand;
+        self
+    }
+    #[allow(dead_code)]
+    pub fn flip_side(&mut self)->&mut Self{
+        self.righthand = !self.righthand;
+        self
+    }
+    #[allow(dead_code)]
+    pub fn mul(&mut self, f:f64)->&mut Self{
+        self.dir.mul(f);
+        self
+    }
+    #[allow(dead_code)]
+    pub fn div(&mut self, f:f64)->&mut Self{
+        self.dir.div(f);
+        self
+    }
+
+
+
+}
+
 
 
 pub struct Matrix{}
