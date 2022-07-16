@@ -2563,6 +2563,11 @@ impl NurbsGeo{
     }
 
     #[allow(dead_code)]
+    pub fn sphere_knots()->Vec<f64>{
+        Vec::from([ 0.,0.,0.,0.5,0.5,1.,1.,1.])
+    }
+
+    #[allow(dead_code)]
     pub fn circle_deg()->u8{ 2 }
 
     #[allow(dead_code)]
@@ -2655,6 +2660,10 @@ impl Surface{
         Surface{ id:-1, surface:SurfaceGeo::new_with_knots(cpts, udegree, vdegree, uknots, vknots, ustart, uend, vstart, vend),attr:Attribute::default()}
     }
     #[allow(dead_code)]
+    pub fn new_with_knots_and_weights(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8, uknots:Vec<f64>, vknots:Vec<f64>, weights:Vec<Vec<f64>>, ustart:f64, uend:f64, vstart:f64, vend:f64)->Self{
+        Surface{ id:-1, surface:SurfaceGeo::new_with_knots_and_weights(cpts, udegree, vdegree, uknots, vknots, weights, ustart, uend, vstart, vend),attr:Attribute::default()}
+    }
+    #[allow(dead_code)]
     pub fn quad(pt1:Vec3, pt2:Vec3, pt3:Vec3, pt4:Vec3)->Self{
         Surface::new(Vec::from([Vec::from([pt1,pt2]),Vec::from([pt4,pt3])]), 1, 1)
     }
@@ -2680,6 +2689,57 @@ impl Surface{
         vec![ *pt2.dif(&t1).sub(&t2), *pt2.dif(&t1).add(&t2), *pt2.cp(&t1).add(&t2), *pt2.dif(&t1).add(&t1)]];
         Surface::new(pts, 1, 1)
     }
+
+    #[allow(dead_code)]
+    pub fn cylinder(pt1:&Vec3, pt2:&Vec3, radius1:f64, radius2:f64)->Self{
+        let normal = pt2.dif(pt1);
+        let (cpts1,weights1) = NurbsGeo::circle_cp(pt1, &normal, radius1);
+        let (cpts2,weights2) = NurbsGeo::circle_cp(pt2, &normal, radius2);
+        let cpts : Vec<Vec<Vec3>> = Vec::from([cpts1, cpts2]);
+        let weights : Vec<Vec<f64>> = Vec::from([weights1, weights2]);
+        Surface::new_with_knots_and_weights(cpts, 1, NurbsGeo::circle_deg(), NurbsGeo::create_knots(1,2,false), NurbsGeo::circle_knots(), weights, 0.0, 1.0, 0.0, 1.0)
+    }
+
+    #[allow(dead_code)]
+    pub fn pipe(pt1:&Vec3, pt2:&Vec3, radius:f64)->Self{
+        Surface::cylinder(pt1,pt2,radius,radius)
+    }
+/*
+    #[allow(dead_code)]
+    pub fn sphere(center:&Vec3, radius:f64)->Self{
+        let tpt = center.clone().add(&Vec3::new(0.0,0.0,radius));
+        let bpt = center.clone().add(&Vec3::new(0.0,0.0,-radius));
+        let (cir_cpts, cir_weights) = NurbsGeo::circle_cp(center, &Vec3::new(0.0,0.0,1.0), radius);
+        let cpts : Vec<Vec<Vec3>> = Vec::new();
+        let weights : Vec<Vec<f64>> = Vec::new();
+
+        for i in 0..cpts.len(){
+            let cps :Vec<Vec3> = Vec::new();
+            let wts :Vec<f64> = Vec::new();
+            // 0
+            cps.push(bpt.clone());
+            if i%2==0{ wts.push(1.0); } else {wts.push( 2.0_f64.sqrt()/2.0); }
+            // 1
+            let cp1 = cir_cpts[i].clone().add(&Vec3::new(0.0,0.0,-radius);
+            cps.push(cp1);
+            wts.push(cir_weights[i] * 2.0_f64.sqrt()/2.0);
+            // 2
+            cps.push(cir_cpts[i].clone());
+            wts.push(cir_weights[i]);
+            // 3
+            cps.push(cir_cpts[i].clone().add(&Vec3::new(0.0,0.0,radius)));
+            wts.push(cir_weights[i] * 2.0_f64.sqrt()/2.0);
+            // 4
+            cps.push(tpt.clone());
+            if i%2==0{ wts.push(1.0); } else {wts.push( 2.0_f64.sqrt()/2.0); }
+
+            cpts.push(cps);
+            weights.push(wts);
+        }
+
+        Surface::new_with_knots_and_weights(cpts, NurbsGeo::circle_deg(), NurbsGeo::circle_deg(), NurbsGeo::circle_knots, NurbsGeo::sphere_knots, weights, 0.0, 1.0, 0.0, 1.0)
+    }
+*/
 
     #[allow(dead_code)]
     pub fn pt(&self, u:f64, v:f64)->Vec3{
@@ -2793,7 +2853,21 @@ pub struct SurfaceGeo{
 
 impl SurfaceGeo{
     #[allow(dead_code)]
-    pub fn new_with_knots(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8, mut uknots:Vec<f64>, mut vknots:Vec<f64>, ustart:f64, uend:f64, vstart:f64, vend:f64)->Self{
+    pub fn new_with_knots(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8, uknots:Vec<f64>, vknots:Vec<f64>, ustart:f64, uend:f64, vstart:f64, vend:f64)->Self{
+        let mut weights : Vec<Vec<f64>> = Vec::new();
+        #[allow(unused_variables)]
+        for i in 0..cpts.len(){
+            let mut w : Vec<f64> = Vec::new();
+            for j in 0..cpts[i].len(){
+                w.push(1.0);
+            }
+            weights.push(w);
+        }
+        SurfaceGeo::new_with_knots_and_weights(cpts, udegree, vdegree, uknots, vknots, weights, ustart, uend, vstart, vend)
+    }
+
+    #[allow(dead_code)]
+    pub fn new_with_knots_and_weights(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8, mut uknots:Vec<f64>, mut vknots:Vec<f64>, weights:Vec<Vec<f64>>, ustart:f64, uend:f64, vstart:f64, vend:f64)->Self{
         if ustart != 0.0 || uend != 1.0{
             uknots = NurbsGeo::normalize_knots(uknots, &ustart, &uend);
         }
@@ -2806,17 +2880,6 @@ impl SurfaceGeo{
         let basis_function_v = BSplineBasisFunction::new(vdegree, vknots.clone());
         let mut derivative_function_v = BSplineBasisFunction::new(vdegree, vknots.clone());
         derivative_function_v.differentiate();
-
-        let mut weights : Vec<Vec<f64>> = Vec::new();
-        #[allow(unused_variables)]
-        for i in 0..cpts.len(){
-            let mut w : Vec<f64> = Vec::new();
-            for j in 0..cpts[i].len(){
-                w.push(1.0);
-            }
-            weights.push(w);
-        }
-
         SurfaceGeo{
             cpts, udegree, vdegree, uknots, vknots, ustart, uend, vstart, vend, weights, basis_function_u, basis_function_v, derivative_function_u, derivative_function_v
         }

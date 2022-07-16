@@ -592,6 +592,11 @@ impl Agent{
         //cir.clr(t, -0.5+t*0.5, 1.0-t, 1.0 );
         //manager.add_curve(Box::new(cir));
 
+        let mut pipe = Surface::pipe(&self.pos,&pos2, 0.2);
+        pipe.clr(t, -0.5+t*0.5, 1.0-t, 1.0 );
+        manager.add_surface(Box::new(pipe));
+
+
         let mut agent = Agent::new_with_dir(pos2, dir2);
         agent.set_attr(&self.attr);
         manager.add_agent(Box::new(agent)) as i32;
@@ -824,10 +829,10 @@ pub fn start() -> Result<(), JsValue> {
     server.set_zoom(0.2);
     //server.set_zoom(1.0);
     //server.set_camera_rotation_speed(0.5);
-    //server.enable_camera_rotation(true);
+    server.enable_camera_rotation(true);
     //server.enable_camera_rotation(false);
     //server.set_camera_yaw(0.0);
-    //server.set_camera_pitch(PI/12.);
+    server.set_camera_pitch(PI/12.);
     //server.set_camera_pitch(PI/2.); // xy plane
     //server.bg(&Color::new(0.0, 0.0, 0.0, 1.0));
     //server.bg_colors(&Color::new(0.0, 0.0, 0.0, 1.0), &Color::new(0.0, 0.0, 0.0, 1.0), &Color::new(0.1, 0.0, 0.3, 1.0),  &Color::new(0.2, 0.2, 0.2, 1.0));
