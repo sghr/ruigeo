@@ -407,6 +407,11 @@ impl Agent{
 }
 */
 
+#[allow(dead_code)]
+pub fn random_percent(percent:f64)->bool{
+    rand::random::<f64>() * 100.0 < percent
+}
+
 /*
 // agent 20220629
 impl Agent{
@@ -539,11 +544,16 @@ impl Agent{
         //line.clr(1.0, 1.0, 0.0, 1.0);
         //let t = manager.time as f32 * 0.001;
         let t = (manager.time as f32 * 0.02).sin() ;
-        line.clr( 1.0-t*2.0, 0.3, 1.0-t*4.0, 0.4 );
+        line.clr( 1.0-t*2.0, 0.3, 1.0-t*4.0, 0.5 );
         //line.clr( 1.0-t*2.0, 1.0, 1.0-t*4.0, 0.4 );
         //line.hsb(t, 1.0, 1.0, 1.0 );
-
+        //line.clr(0.0, 0.0, 0.0, 1.0 );
         manager.add_curve(Box::new(line));
+
+        let l = self.dir.len()*0.5;
+        let mut srf = Surface::quad(self.pos, pos2, pos2.cp(&Vec3::new(0.0,0.0,l)), self.pos.cp(&Vec3::new(0.0,0.0,l)) );
+        srf.clr( 1.0-t*2.0, 0.3, 1.0-t*4.0, 0.4 );
+        manager.add_surface(Box::new(srf));
 
         let mut agent = Agent::new_with_dir(pos2, dir2);
         agent.set_attr(&self.attr);
@@ -555,7 +565,7 @@ impl Agent{
 */
 
 
-/*
+
 // agent type 1
 impl Agent{
     #[allow(unused_variables)]
@@ -567,16 +577,20 @@ impl Agent{
         let mut dir2 = self.dir.clone();
 
         if pos2.x > 0.0{
-            dir2.add(&Vec3::new(-0.0025, 0.0, 0.0));
+            dir2.add(&Vec3::new(-0.01, 0.0, 0.0));
         }
         else{
-            dir2.add(&Vec3::new(0.0025, 0.0, 0.0));
+            dir2.add(&Vec3::new(0.01, 0.0, 0.0));
         }
 
         let mut line = Curve::line(self.pos, pos2);
         let t = (manager.time as f64*0.01).sin() as f32;
         line.clr(t, 0.5-t*0.5, 1.0-t, 1.0 );
         manager.add_curve(Box::new(line));
+
+        //let mut cir = Curve::circle(&self.pos, &self.dir, 0.1);
+        //cir.clr(t, -0.5+t*0.5, 1.0-t, 1.0 );
+        //manager.add_curve(Box::new(cir));
 
         let mut agent = Agent::new_with_dir(pos2, dir2);
         agent.set_attr(&self.attr);
@@ -585,9 +599,9 @@ impl Agent{
         manager.delete_agent(self.id);
     }
 }
-*/
 
 
+/*
 // agent type 2
 impl Agent{
     #[allow(unused_variables)]
@@ -629,7 +643,9 @@ impl Agent{
             //let point = Box::new(Point::new(self.pos.x, self.pos.y, self.pos.z));
             //manager.add_point(point) as i32;
             let mut line = Curve::line(self.pos, pos2);
-            line.set_attr(&self.attr);
+            //line.set_attr(&self.attr);
+            //line.clr(1.0,1.0,1.0,1.0);
+            line.clr(0.0,0.0,0.0,1.0);
             manager.add_curve(Box::new(line));
 
             if rand::random::<f64>()<0.8{
@@ -658,7 +674,7 @@ impl Agent{
         self.time+=1;
     }
 }
-
+*/
 
 /*
 // agent type 3
@@ -805,30 +821,30 @@ pub fn start() -> Result<(), JsValue> {
     //server.duration(100);
     server.set_active_agent_limit_num(2000);
     //server.set_zoom(0.1);
-    //server.set_zoom(0.2);
+    server.set_zoom(0.2);
     //server.set_zoom(1.0);
-    server.set_camera_rotation_speed(0.5);
+    //server.set_camera_rotation_speed(0.5);
     //server.enable_camera_rotation(true);
-    server.enable_camera_rotation(false);
-    server.set_camera_yaw(0.0);
+    //server.enable_camera_rotation(false);
+    //server.set_camera_yaw(0.0);
     //server.set_camera_pitch(PI/12.);
-    server.set_camera_pitch(PI/2.); // xy plane
+    //server.set_camera_pitch(PI/2.); // xy plane
     //server.bg(&Color::new(0.0, 0.0, 0.0, 1.0));
     //server.bg_colors(&Color::new(0.0, 0.0, 0.0, 1.0), &Color::new(0.0, 0.0, 0.0, 1.0), &Color::new(0.1, 0.0, 0.3, 1.0),  &Color::new(0.2, 0.2, 0.2, 1.0));
-    server.bg_colors(&Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(1.0, 1.0, 1.0, 1.0),  &Color::new(0.9, 0.9, 0.9, 1.0));
+    //server.bg_colors(&Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(0.3, 0.5, 0.7, 1.0), &Color::new(1.0, 1.0, 1.0, 1.0),  &Color::new(0.9, 0.9, 0.9, 1.0));
 
 
 
 
-    /*
+
     // agent type 1
     let num = 40;
     let inc = PI*2.0/num as f64;
     for i in 0..num{
 
         let a = Agent::new_with_dir(
-            Vec3{x:(i as f64 * inc).cos()*1.0, y:(i as f64 * inc).sin()*1.0, z:0.0},
-            Vec3{x:((i+6)as f64 *inc).cos()*1.25, y:((i+6)as f64*inc).sin()*0.25, z:0.0});
+            Vec3{x:(i as f64 * inc).cos()*4.0, y:(i as f64 * inc).sin()*4.0, z:0.0},
+            Vec3{x:((i+6)as f64 *inc).cos()*0.5, y:((i+6)as f64*inc).sin()*0.1, z:0.0});
 
         //let a = Agent::new_with_dir(
         //    Vec3{x: i as f64 * 1.0, y: i as f64 * -1.0, z:0.0},
@@ -836,13 +852,14 @@ pub fn start() -> Result<(), JsValue> {
 
         server.add_agent(Box::new(a));
     }
-    */
 
 
+    /*
     // agent type 2
     let mut a = Agent::new_with_dir(Vec3{x:0.0, y:0.0, z:0.0}, Vec3{x:0.0, y:0.2, z:0.0});
     a.clr(0.0,0.0,0.0,1.0);
     server.add_agent(Box::new(a));
+    */
 
     /*
     // agent type 3
@@ -854,8 +871,9 @@ pub fn start() -> Result<(), JsValue> {
     */
 
     /*
-    // agent 20220629_1
-    let a = Agent::new_with_dir(Vec3{x:0.0, y:0.0, z:0.0}, Vec3{x:0.0, y:1.0, z:0.0});
+    // agent 20220629
+    let a = Agent::new_with_dir(Vec3{x:0.0, y:0.0, z:0.0}, Vec3{x:0.0, y:1.0, z:0.1});
+    //let a = Agent::new_with_dir(Vec3{x:0.0, y:0.0, z:0.0}, Vec3{x:0.0, y:1.0, z:0.0});
     server.add_agent(Box::new(a));
     */
 
@@ -866,13 +884,13 @@ pub fn start() -> Result<(), JsValue> {
     server.add_agent(Box::new(a));
     */
 
-
-    // agent 20220630: random orthogonal
     /*
+    // agent 20220630: random orthogonal
     let a = Agent::new_with_orient(Vec3{x:0.0, y:0.0, z:-15.0}, Orient::new(Vec3{x:1.0, y:0.0, z:0.0}, Vec3{x:0.0,y:0.0,z:1.0}));
     //let a = Agent::new_with_orient(Vec3{x:0.0, y:0.0, z:0.0}, Orient::new(*Vec3{x:1.0, y:1.0, z:1.0}.unit(), *Vec3{x:1.0,y:-1.0,z:0.0}.unit()));
     server.add_agent(Box::new(a));
     */
+
     /*
     // agent 20220630: orthogonal
     //let a = Agent::new_with_orient(Vec3{x:0.0, y:0.0, z:0.0}, Orient::new(Vec3{x:0.0, y:0.0, z:1.0}, Vec3{x:0.0,y:1.0,z:0.0}));

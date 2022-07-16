@@ -1158,7 +1158,7 @@ impl GlSurface{
                 }
             }
         }
-        
+
         if INSERT_POINT_ON_DEGREE1_TWISTED_SURFACE && surface.udeg()==1 && surface.vdeg()==1{
             let mut uinsert : Vec<bool> = Vec::new();
             let mut vinsert : Vec<bool> = Vec::new();
@@ -1623,7 +1623,17 @@ impl WebGlServer{
         else if rad >= 2.0*PI{
             rad -= (rad/(2.0*PI)).floor()*2.0*PI;
         }
-
+        /*
+        if self.time < 500{
+            self.camera_pitch = PI/2.0;
+        }
+        else if self.time < 1000{
+            self.camera_pitch = (PI / 12.0 - PI/2.0) * (self.time - 500) as f64 / (1000.0-500.0) + PI/2.0;
+        }
+        else{
+            self.camera_pitch = PI / 12.0;
+        }
+        */
         //view rotation
         //self.m_matrix = Matrix4::y_rotation(rad);
         self.m_matrix = Matrix4::x_rotation(PI/2.0);
@@ -2179,6 +2189,10 @@ impl Curve{
         Curve{ id:-1, curve:CurveGeo::new_with_knots(cpts, degree, knots, ustart, uend),attr:Attribute::default()}
     }
     #[allow(dead_code)]
+    pub fn new_with_knots_and_weights(cpts:Vec<Vec3>, degree:u8, knots:Vec<f64>, weights:Vec<f64>, ustart:f64, uend:f64)->Self{
+        Curve{ id:-1, curve:CurveGeo::new_with_knots_and_weights(cpts, degree, knots, weights, ustart, uend),attr:Attribute::default()}
+    }
+    #[allow(dead_code)]
     pub fn polyline(cpts:Vec<Vec3>)->Self{
         Curve::new(cpts, 1)
     }
@@ -2186,6 +2200,27 @@ impl Curve{
     pub fn line(pt1:Vec3, pt2:Vec3)->Self{
         Curve::new(Vec::from([pt1,pt2]), 1)
     }
+
+    #[allow(dead_code)]
+    pub fn circle(center:&Vec3, normal:&Vec3, radius:f64)->Self{
+        let (cpts, weights) = NurbsGeo::circle_cp(center, normal, radius);
+        Curve::new_with_knots_and_weights(cpts, NurbsGeo::circle_deg(), NurbsGeo::circle_knots(), weights, 0.0, 1.0)
+    }
+
+    #[allow(dead_code)]
+    pub fn circle_with_roll_dir(center:&Vec3, normal:&Vec3, roll_dir:&Vec3, radius:f64)->Self{
+        let (cpts, weights) = NurbsGeo::circle_cp_with_roll_dir(center, normal, roll_dir, radius);
+        Curve::new_with_knots_and_weights(cpts, NurbsGeo::circle_deg(), NurbsGeo::circle_knots(), weights, 0.0, 1.0)
+    }
+
+    #[allow(dead_code)]
+    pub fn oval(center:&Vec3, xvec:&Vec3, yvec:&Vec3)->Self{
+        let (cpts, weights) = NurbsGeo::oval_cp(center, xvec, yvec);
+        Curve::new_with_knots_and_weights(cpts, NurbsGeo::circle_deg(), NurbsGeo::circle_knots(), weights, 0.0, 1.0)
+    }
+
+
+
     #[allow(dead_code)]
     pub fn pt(&self, u:f64)->Vec3{
         self.curve.pt(u)
@@ -2257,16 +2292,21 @@ pub struct CurveGeo{
 
 impl CurveGeo{
     #[allow(dead_code)]
-    pub fn new_with_knots(cpts:Vec<Vec3>, degree:u8, mut knots:Vec<f64>, ustart:f64, uend:f64)->Self{
+    pub fn new_with_knots(cpts:Vec<Vec3>, degree:u8, knots:Vec<f64>, ustart:f64, uend:f64)->Self{
+        let mut default_weights : Vec<f64> = Vec::new();
+        #[allow(unused_variables)]
+        for i in 0..cpts.len(){ default_weights.push(1.0); }
+        CurveGeo::new_with_knots_and_weights(cpts,degree,knots,default_weights,ustart,uend)
+    }
+
+    #[allow(dead_code)]
+    pub fn new_with_knots_and_weights(cpts:Vec<Vec3>, degree:u8, mut knots:Vec<f64>, weights:Vec<f64>, ustart:f64, uend:f64)->Self{
         if ustart != 0.0 || uend != 1.0{
             knots = NurbsGeo::normalize_knots(knots, &ustart, &uend);
         }
         let basis_function = BSplineBasisFunction::new(degree, knots.clone());
         let mut derivative_function = BSplineBasisFunction::new(degree, knots.clone());
         derivative_function.differentiate();
-        let mut weights : Vec<f64> = Vec::new();
-        #[allow(unused_variables)]
-        for i in 0..cpts.len(){ weights.push(1.0); }
 
         CurveGeo{
             cpts, degree, knots, ustart, uend, weights, basis_function, derivative_function
@@ -2517,6 +2557,71 @@ impl NurbsGeo{
         cpts2
     }
 
+    #[allow(dead_code)]
+    pub fn circle_knots()->Vec<f64>{
+        Vec::from([0.,0.,0.,0.25,0.25,0.5,0.5,0.75,0.75,1.,1.,1. ])
+    }
+
+    #[allow(dead_code)]
+    pub fn circle_deg()->u8{ 2 }
+
+    #[allow(dead_code)]
+    pub fn circle_cp_with_xy_radius(center:&Vec3, normal:&Vec3, roll_dir:&Vec3, xradius:f64, yradius:f64)->(Vec<Vec3>, Vec<f64>){
+        let mut roll_dir2 = roll_dir.clone();
+        if roll_dir2.len2() == 0.0{
+            roll_dir2 = Vec3::new(0.0,0.0,1.0);
+        }
+        else if normal.cross(&roll_dir2).len2() == 0.0{
+            if roll_dir2.cross(&Vec3::new(0.0,0.0,1.0)).len2() == 0.0{
+                roll_dir2 = Vec3::new(1.0,0.0,0.0);
+            }
+            else{
+                roll_dir2 = Vec3::new(0.0,0.0,1.0);
+            }
+        }
+
+        let mut yvec = normal.cross(&roll_dir2);
+        let mut xvec = yvec.cross(normal);
+        xvec.set_len(xradius);
+        yvec.set_len(yradius);
+        NurbsGeo::oval_cp(center, &xvec, &yvec)
+    }
+
+    #[allow(dead_code)]
+    pub fn circle_cp_with_roll_dir(center:&Vec3, normal:&Vec3, roll_dir:&Vec3, radius:f64)->(Vec<Vec3>, Vec<f64>){
+        NurbsGeo::circle_cp_with_xy_radius(center,normal,roll_dir,radius,radius)
+    }
+
+    #[allow(dead_code)]
+    pub fn circle_cp(center:&Vec3, normal:&Vec3, radius:f64)->(Vec<Vec3>, Vec<f64>){
+        let default_roll_dir = Vec3::new(1.0,0.0,0.0);
+        NurbsGeo::circle_cp_with_xy_radius(center,normal,&default_roll_dir,radius,radius)
+    }
+
+    #[allow(dead_code)]
+    pub fn oval_cp(center:&Vec3, xvec:&Vec3, yvec:&Vec3)->(Vec<Vec3>, Vec<f64>){
+        let mut cpts : Vec<Vec3> = Vec::new();
+        let mut weights : Vec<f64> = Vec::new();
+        for i in 0..9{
+            cpts.push(center.clone());
+            if i%2 == 0{
+                weights.push(1.0);
+            }
+            else{
+                weights.push(2.0_f64.sqrt()/2.0);
+            }
+        }
+        cpts[0].add(&xvec);
+        cpts[1].add(&xvec).add(&yvec);
+        cpts[2].add(&yvec);
+        cpts[3].sub(&xvec).add(&yvec);
+        cpts[4].sub(&xvec);
+        cpts[5].sub(&xvec).sub(&yvec);
+        cpts[6].sub(&yvec);
+        cpts[7].add(&xvec).sub(&yvec);
+        cpts[8].add(&xvec);
+        (cpts, weights)
+    }
 
 }
 
