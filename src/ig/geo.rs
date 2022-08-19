@@ -1,4 +1,4 @@
-use super::Attribute;
+use super::Attr;
 use super::Color;
 use super::math::Vec3;
 
@@ -18,17 +18,17 @@ pub struct Point/*<'a>*/{
 //    object: Object,
     pub id: i32,
     pub pos: Vec3,
-    pub attr: Attribute
+    pub attr: Attr
 }
 
 impl Point{
     #[allow(dead_code)]
     pub fn new(x:f64, y:f64, z:f64)->Self{
-        Point{id:-1, pos:Vec3::new(x,y,z),attr:Attribute::default()}
+        Point{id:-1, pos:Vec3::new(x,y,z),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn new_with_vec3(pos:&Vec3)->Self{
-        Point{id:-1, pos:Vec3::new_with_vec3(pos),attr:Attribute::default()}
+        Point{id:-1, pos:Vec3::new_with_vec3(pos),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn set_id(&mut self, id:i32){
@@ -50,7 +50,7 @@ impl Point{
         self
     }
     #[allow(dead_code)]
-    pub fn set_attr(&mut self, attr:&Attribute)->&mut Point{
+    pub fn set_attr(&mut self, attr:&Attr)->&mut Point{
         self.attr.set(attr);
         self
     }
@@ -62,26 +62,26 @@ pub struct Curve/*<'a>*/{
 //    object: Object/*<'a>*/,
     pub id: i32,
     pub curve: CurveGeo,
-    pub attr: Attribute
+    pub attr: Attr
 
 }
 
 impl Curve{
     #[allow(dead_code)]
     pub fn new(cpts:Vec<Vec3>, degree:u8)->Self{
-        Curve{ id:-1, curve:CurveGeo::new(cpts, degree),attr:Attribute::default()}
+        Curve{ id:-1, curve:CurveGeo::new(cpts, degree),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn new_closed(cpts:Vec<Vec3>, degree:u8)->Self{
-        Curve{ id:-1, curve:CurveGeo::new_closed(cpts, degree),attr:Attribute::default()}
+        Curve{ id:-1, curve:CurveGeo::new_closed(cpts, degree),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn new_with_knots(cpts:Vec<Vec3>, degree:u8, knots:Vec<f64>, ustart:f64, uend:f64)->Self{
-        Curve{ id:-1, curve:CurveGeo::new_with_knots(cpts, degree, knots, ustart, uend),attr:Attribute::default()}
+        Curve{ id:-1, curve:CurveGeo::new_with_knots(cpts, degree, knots, ustart, uend),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn new_with_knots_and_weights(cpts:Vec<Vec3>, degree:u8, knots:Vec<f64>, weights:Vec<f64>, ustart:f64, uend:f64)->Self{
-        Curve{ id:-1, curve:CurveGeo::new_with_knots_and_weights(cpts, degree, knots, weights, ustart, uend),attr:Attribute::default()}
+        Curve{ id:-1, curve:CurveGeo::new_with_knots_and_weights(cpts, degree, knots, weights, ustart, uend),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn polyline(cpts:Vec<Vec3>)->Self{
@@ -164,7 +164,7 @@ impl Curve{
         self
     }
     #[allow(dead_code)]
-    pub fn set_attr(&mut self, attr:&Attribute)->&mut Curve{
+    pub fn set_attr(&mut self, attr:&Attr)->&mut Curve{
         self.attr.set(attr);
         self
     }
@@ -530,34 +530,34 @@ pub struct Surface{
     #[allow(dead_code)]
     id: i32,
     surface: SurfaceGeo,
-    pub attr: Attribute
+    pub attr: Attr
 }
 
 
 impl Surface{
     #[allow(dead_code)]
     pub fn new(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
-        Surface{ id:-1, surface:SurfaceGeo::new(cpts, udegree, vdegree), attr:Attribute::default()}
+        Surface{ id:-1, surface:SurfaceGeo::new(cpts, udegree, vdegree), attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn new_u_closed(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
-        Surface{ id:-1, surface:SurfaceGeo::new_u_closed(cpts, udegree, vdegree),attr:Attribute::default()}
+        Surface{ id:-1, surface:SurfaceGeo::new_u_closed(cpts, udegree, vdegree),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn new_v_closed(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
-        Surface{ id:-1, surface:SurfaceGeo::new_v_closed(cpts, udegree, vdegree),attr:Attribute::default()}
+        Surface{ id:-1, surface:SurfaceGeo::new_v_closed(cpts, udegree, vdegree),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn new_uv_closed(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8)->Self{
-        Surface{ id:-1, surface:SurfaceGeo::new_uv_closed(cpts, udegree, vdegree),attr:Attribute::default()}
+        Surface{ id:-1, surface:SurfaceGeo::new_uv_closed(cpts, udegree, vdegree),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn new_with_knots(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8, uknots:Vec<f64>, vknots:Vec<f64>, ustart:f64, uend:f64, vstart:f64, vend:f64)->Self{
-        Surface{ id:-1, surface:SurfaceGeo::new_with_knots(cpts, udegree, vdegree, uknots, vknots, ustart, uend, vstart, vend),attr:Attribute::default()}
+        Surface{ id:-1, surface:SurfaceGeo::new_with_knots(cpts, udegree, vdegree, uknots, vknots, ustart, uend, vstart, vend),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn new_with_knots_and_weights(cpts:Vec<Vec<Vec3>>, udegree:u8, vdegree:u8, uknots:Vec<f64>, vknots:Vec<f64>, weights:Vec<Vec<f64>>, ustart:f64, uend:f64, vstart:f64, vend:f64)->Self{
-        Surface{ id:-1, surface:SurfaceGeo::new_with_knots_and_weights(cpts, udegree, vdegree, uknots, vknots, weights, ustart, uend, vstart, vend),attr:Attribute::default()}
+        Surface{ id:-1, surface:SurfaceGeo::new_with_knots_and_weights(cpts, udegree, vdegree, uknots, vknots, weights, ustart, uend, vstart, vend),attr:Attr::default()}
     }
     #[allow(dead_code)]
     pub fn quad(pt1:Vec3, pt2:Vec3, pt3:Vec3, pt4:Vec3)->Self{
@@ -723,7 +723,7 @@ impl Surface{
         self
     }
     #[allow(dead_code)]
-    pub fn set_attr(&mut self, attr:&Attribute)->&mut Surface{
+    pub fn set_attr(&mut self, attr:&Attr)->&mut Surface{
         self.attr.set(attr);
         self
     }
@@ -1025,7 +1025,7 @@ impl Object for Point{
     fn draw(&mut self){    }
 //    fn interact(&self, objects:&Vec<Box<dyn Object>>){}
 //    fn update(&self){}
-//    fn attr(&self)->&mut Attribute{
+//    fn attr(&self)->&mut Attr{
 //        &self.attr
 //    }
 }
